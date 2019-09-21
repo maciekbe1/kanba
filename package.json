@@ -1,0 +1,33 @@
+{
+    "name": "kanba-server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon --exec babel-node index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^3.0.6",
+        "body-parser": "^1.19.0",
+        "cookie-parser": "^1.4.4",
+        "cors": "^2.8.5",
+        "dotenv": "^8.1.0",
+        "express": "^4.17.1",
+        "helmet": "^3.21.1",
+        "joi": "^14.3.1",
+        "jsonwebtoken": "^8.5.1",
+        "lodash": "^4.17.15",
+        "mongodb": "^3.3.2",
+        "mongoose": "^5.7.1",
+        "morgan": "^1.9.1",
+        "nodemon": "^1.19.2"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.6.0",
+        "@babel/node": "^7.6.1",
+        "@babel/preset-env": "^7.6.0"
+    }
+}
