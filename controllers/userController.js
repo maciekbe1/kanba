@@ -1,10 +1,12 @@
 import bcrypt from "bcrypt";
-import User from "../models/User";
+import { User, validate } from "../models/User";
+import _ from "lodash";
 
 exports.getUser = (req, res, next) => {
     const userID = req.params.id;
     User.findById(userID)
         .then(user => {
+            console.log(user);
             if (!user) {
                 const error = new Error("Could not find user.");
                 error.statusCode = 404;
@@ -35,4 +37,20 @@ exports.getAllUsers = (req, res, next) => {
             }
             next(err);
         });
+};
+
+exports.signUp = async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    let user = await User.findOne({ email: req.body.email });
+    if (user) return res.status(400).send("User already exist.");
+
+    user = new User(_.pick(req.body, ["login", "password", "email"]));
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+    await user.save();
+    const token = user.generateAuthToken();
+    res.header("x-auth-token", token).send(
+        _.pick(user, ["_id", "login", "email"])
+    );
 };

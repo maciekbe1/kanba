@@ -8,6 +8,7 @@ import morgan from "morgan";
 import projects from "./routes/projects";
 import taskRouter from "./routes/taskRouter";
 import userRouter from "./routes/userRouter";
+import authRouter from "./routes/authRouter";
 
 require("dotenv").config();
 
@@ -39,6 +40,7 @@ app.use(
 app.use("/api/projects", projects);
 app.use("/api/tasks", taskRouter);
 app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 
 app.use((error, req, res, next) => {
     console.log(error);
@@ -49,7 +51,11 @@ app.use((error, req, res, next) => {
 const connectDb = () => {
     return mongoose.connect(
         process.env.MONGO_URI,
-        { useNewUrlParser: true, useUnifiedTopology: true },
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true
+        },
         () => {
             console.log("DB connected");
         }
@@ -62,5 +68,5 @@ connectDb()
         });
     })
     .catch(err => {
-        console.log(error);
+        console.log(err);
     });
