@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+import Joi from "joi";
 
-const taskSchema = new Schema({
+const taskSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -11,15 +11,13 @@ const taskSchema = new Schema({
     taskIndex: {
         type: Number
     },
-    user: {
-        type: String
-    },
     project: {
-        type: String
+        type: String,
+        default: "None"
     },
     description: {
         type: String,
-        required: true
+        default: ""
     },
     projectID: {
         type: String,
@@ -31,11 +29,11 @@ const taskSchema = new Schema({
     },
     performerID: {
         type: String,
-        required: true
+        default: "None"
     },
     creatorID: {
         type: String,
-        required: true
+        default: "None"
     },
     currentSprint: {
         type: String,
@@ -58,4 +56,25 @@ const taskSchema = new Schema({
         default: ""
     }
 });
-module.exports = mongoose.model("Task", taskSchema);
+const Task = mongoose.model("Task", taskSchema);
+
+function validateTask(task) {
+    const schema = {
+        name: Joi.string()
+            .min(3)
+            .max(30)
+            .required(),
+        taskIndex: Joi.number(),
+        project: Joi.string(),
+        description: Joi.string(),
+        projectID: Joi.string().required(),
+        performerID: Joi.string(),
+        creatorID: Joi.string(),
+        currentSprint: Joi.string().required(),
+        currentStatus: Joi.string().required()
+    };
+    return Joi.validate(task, schema);
+}
+
+exports.Task = Task;
+exports.validate = validateTask;

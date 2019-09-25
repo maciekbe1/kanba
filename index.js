@@ -5,7 +5,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import morgan from "morgan";
 
-import projects from "./routes/projects";
+import projectRouter from "./routes/projectRouter";
 import taskRouter from "./routes/taskRouter";
 import userRouter from "./routes/userRouter";
 import authRouter from "./routes/authRouter";
@@ -37,13 +37,12 @@ app.use(
     urlencodedParser,
     morgan("tiny")
 );
-app.use("/api/projects", projects);
+app.use("/api/projects", projectRouter);
 app.use("/api/tasks", taskRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 
 app.use((error, req, res, next) => {
-    console.log(error);
     const status = error.statusCode || 500;
     const message = error.message;
     res.status(status).json({ message: message });
