@@ -1,5 +1,5 @@
-import Task from "../models/Task";
-
+import { Task, validate } from "../models/Task";
+import { User } from "module";
 exports.getTask = (req, res, next) => {
     const taskID = req.params.id;
     Task.findById(taskID)
@@ -61,4 +61,32 @@ exports.getAllTasks = (req, res, next) => {
                 next(err);
             });
     }
+};
+
+exports.createTask = async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    const tasks = await Task.find({
+        projectID: req.body.projectID
+    });
+    const taskIndex = tasks.length;
+    let task = new Task({
+        projectID: req.body.projectID,
+        taskIndex: taskIndex,
+        name: req.body.name,
+        description: req.body.description,
+        performerID: req.body.performerID,
+        creatorID: req.body.creatorID,
+        currentSprint: req.body.currentSprint,
+        currentStatus: req.body.currentStatus
+    });
+    // const checkUserInProject = await User.find({
+    //     _id: req.body.performerID,
+    //     users: req.body.performerID
+    // });
+
+    // if (checkUserInProject)
+    //     return res.status(400).send("User does not exist in this project!");
+    task = await task.save();
+    res.send(task);
 };

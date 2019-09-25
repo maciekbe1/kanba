@@ -3,7 +3,7 @@ import Joi from "joi";
 import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema({
-    login: {
+    name: {
         type: String,
         minlength: 3,
         maxlength: 30,
@@ -31,7 +31,7 @@ const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
     const schema = {
-        login: Joi.string()
+        name: Joi.string()
             .min(3)
             .max(30)
             .required(),
