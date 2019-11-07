@@ -21,3 +21,11 @@ exports.createProject = async (req, res) => {
     project = await project.save();
     res.send(project);
 };
+exports.deleteProject = async (req, res) => {
+    const project = await Project.findByIdAndRemove(req.params.id);
+    if (!project)
+        return res
+            .status(404)
+            .send("The project with the given ID is not exist.");
+    res.send(project);
+};

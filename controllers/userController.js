@@ -10,7 +10,6 @@ exports.getUser = (req, res, next) => {
     const userID = req.params.id;
     User.findById(userID)
         .then(user => {
-            console.log(user);
             if (!user) {
                 const error = new Error("Could not find user.");
                 error.statusCode = 404;

@@ -90,3 +90,9 @@ exports.createTask = async (req, res) => {
     task = await task.save();
     res.send(task);
 };
+exports.deleteTask = async (req, res) => {
+    const task = await Task.findByIdAndRemove(req.params.id);
+    if (!task)
+        return res.status(404).send("The task with the given ID is not exist.");
+    res.send(task);
+};
