@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { User, validate } from "../models/User";
 import _ from "lodash";
+import nodemailer from "nodemailer";
 
 exports.me = async (req, res) => {
     const user = await User.findById(req.user._id).select("-password");
@@ -56,4 +57,22 @@ exports.signUp = async (req, res) => {
     res.header("x-auth-token", token).send(
         _.pick(user, ["_id", "name", "email"])
     );
+    //send a welcome message
+    let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+    const mailOptions = {
+        from: "Kanba",
+        to: req.body.email,
+        subject: "Kanba Welcome",
+        html: `<p>Welcome in Kanba ${req.body.name}</p>`
+    };
+    transporter.sendMail(mailOptions, function(err, info) {
+        if (err) console.log(err);
+        else console.log(info);
+    });
 };
