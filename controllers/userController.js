@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { User, validate } from "../models/User";
 import _ from "lodash";
 import nodemailer from "nodemailer";
@@ -32,7 +33,7 @@ exports.getAllUsers = (req, res, next) => {
             res.status(200).json({
                 message: "Fetched users successfully.",
                 users: users,
-                userLength: users.length
+                userLength: users.length,
             });
         })
         .catch(err => {
@@ -51,28 +52,54 @@ exports.signUp = async (req, res) => {
 
     user = new User(_.pick(req.body, ["name", "password", "email"]));
     const salt = await bcrypt.genSalt(10);
+    const random = crypto.randomBytes(20).toString("hex");
     user.password = await bcrypt.hash(user.password, salt);
+    user.confirmationHash = random;
+
     await user.save();
     const token = user.generateAuthToken();
     res.header("x-auth-token", token).send(
         _.pick(user, ["_id", "name", "email"])
     );
-    //send a welcome message
+    //send a confirm message
     let transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
+            pass: process.env.EMAIL_PASS,
+        },
     });
     const mailOptions = {
         from: "Kanba",
         to: req.body.email,
         subject: "Kanba Welcome",
-        html: `<p>Welcome in Kanba ${req.body.name}</p>`
+        html: `Hello,<br> Please Click on the link to verify your email.<br><a href="http://localhost:3000/verify/${random}">Click here to verify</a>`,
     };
     transporter.sendMail(mailOptions, function(err, info) {
         if (err) console.log(err);
         else console.log(info);
+    });
+};
+
+exports.verify = async (req, res) => {
+    const hash = req.params.hash;
+    const confirm = await User.findOne({ confirmationHash: hash });
+    if (!confirm) {
+        return res.status(400).send({
+            type: "bad-link",
+            message: "We were unable to find a user for this link.",
+        });
+    }
+    if (confirm.active)
+        return res.status(400).send({
+            type: "already-verified",
+            message: "This user has already been verified.",
+        });
+
+    confirm.active = true;
+    confirm.confirmationHash = "";
+    await confirm.save();
+    return res.status(200).json({
+        message: "User confirmation successfully.",
     });
 };
