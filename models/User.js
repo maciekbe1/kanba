@@ -26,7 +26,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    confirmationHash: {
+    accountConfirmation: {
+        type: String
+    },
+    emailConfirmation: {
         type: String
     }
 });
