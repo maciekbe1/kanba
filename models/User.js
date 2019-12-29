@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
     },
     emailConfirmation: {
         type: String
+    },
+    photo: {
+        type: String,
+        default: ""
     }
 });
 userSchema.methods.generateAuthToken = function() {

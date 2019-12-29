@@ -5,7 +5,9 @@ import _ from "lodash";
 import nodemailer from "nodemailer";
 
 exports.me = async (req, res) => {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user._id)
+        .select("-password")
+        .select("-active");
     res.send(user);
 };
 exports.getUser = (req, res, next) => {
@@ -122,7 +124,7 @@ exports.resetPassword = async (req, res) => {
         from: "Kanba",
         to: req.body.email,
         subject: "Kanba - reset password request",
-        html: `Hello,<br> Please Click on the link to set a new password to your account.<br><a href="http://localhost:3000/set-new-password/${random}">Set new password</a>`
+        html: `Hello,<br> Please Click on the link to set a new password to your account.<br><a href="http://localhost:3000/set-password/${random}">Set new password</a>`
     };
     transporter.sendMail(mailOptions, function(err, info) {
         if (err) console.log(err);
