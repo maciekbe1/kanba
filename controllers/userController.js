@@ -75,7 +75,7 @@ exports.signUp = async (req, res) => {
         from: "Kanba",
         to: req.body.email,
         subject: "Kanba Welcome",
-        html: `Hello,<br> Please Click on the link to verify your email.<br><a href="http://localhost:3000/verify/${random}">Click here to verify</a>`
+        html: `Hello,<br> Please Click on the link to verify your email.<br><a href="${process.env.FRONT_URL}/verify/${random}">Click here to verify</a>`
     };
     transporter.sendMail(mailOptions, function(err, info) {
         if (err) console.log(err);
@@ -124,7 +124,7 @@ exports.resetPassword = async (req, res) => {
         from: "Kanba",
         to: req.body.email,
         subject: "Kanba - reset password request",
-        html: `Hello,<br> Please Click on the link to set a new password to your account.<br><a href="http://localhost:3000/set-password/${random}">Set new password</a>`
+        html: `Hello,<br> Please Click on the link to set a new password to your account.<br><a href="${process.env.FRONT_URL}/set-password/${random}">Set new password</a>`
     };
     transporter.sendMail(mailOptions, function(err, info) {
         if (err) console.log(err);
