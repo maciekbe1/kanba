@@ -65,14 +65,16 @@ exports.signUp = async (req, res) => {
     );
     //send a confirm message
     let transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "poczta.o2.pl",
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         }
     });
     const mailOptions = {
-        from: "Kanba",
+        from: process.env.EMAIL_USER,
         to: req.body.email,
         subject: "Kanba Welcome",
         html: `Hello,<br> Please Click on the link to verify your email.<br><a href="${process.env.FRONT_URL}/verify/${random}">Click here to verify</a>`
@@ -114,14 +116,16 @@ exports.resetPassword = async (req, res) => {
     await user.save();
 
     let transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "poczta.o2.pl",
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         }
     });
     const mailOptions = {
-        from: "Kanba",
+        from: process.env.EMAIL_USER,
         to: req.body.email,
         subject: "Kanba - reset password request",
         html: `Hello,<br> Please Click on the link to set a new password to your account.<br><a href="${process.env.FRONT_URL}/set-password/${random}">Set new password</a>`
