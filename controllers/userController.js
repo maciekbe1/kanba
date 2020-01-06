@@ -7,7 +7,10 @@ import nodemailer from "nodemailer";
 exports.me = async (req, res) => {
     const user = await User.findById(req.user._id)
         .select("-password")
-        .select("-active");
+        .select("-email")
+        .select("-active")
+        .select("-accountConfirmation")
+        .select("-emailConfirmation");
     res.send(user);
 };
 exports.getUser = (req, res, next) => {

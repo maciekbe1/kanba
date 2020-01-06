@@ -9,6 +9,7 @@ import projectRouter from "./routes/projectRouter";
 import taskRouter from "./routes/taskRouter";
 import userRouter from "./routes/userRouter";
 import authRouter from "./routes/authRouter";
+import todoRouter from "./routes/todoRouter";
 
 require("dotenv").config();
 
@@ -41,6 +42,7 @@ app.use("/api/projects", projectRouter);
 app.use("/api/tasks", taskRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/todo", todoRouter);
 
 app.use((error, req, res, next) => {
     const status = error.statusCode || 500;
