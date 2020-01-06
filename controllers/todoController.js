@@ -48,8 +48,8 @@ exports.getUserTodoLists = async (req, res, next) => {
 exports.removeTodoList = async (req, res, next) => {
   try {
     const todoList = await Todo.findByIdAndRemove(req.body.listID);
-    if (!todoList) return await res.status(400).send("Todo list not exist");
-    await res.send(todoList);
+    if (!todoList) res.status(400).send("Todo list not exist");
+    res.status(200).send(todoList);
   } catch (error) {
     next(error);
   }
