@@ -6,22 +6,8 @@ const todoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  title: {
-    type: String,
-    maxlength: 30,
-    required: true
-  },
-  description: {
-    type: String,
-    default: ""
-  },
-  dateCreated: {
-    type: Date,
-    default: Date.now()
-  },
-  list: {
-    type: Array,
-    default: []
+  cards: {
+    type: Array
   }
 });
 
@@ -30,12 +16,7 @@ const Todo = mongoose.model("Todo", todoSchema);
 function validateTodo(todo) {
   const schema = {
     user: Joi.string().required(),
-    title: Joi.string()
-      .max(30)
-      .required(),
-    description: Joi.string()
-      .optional()
-      .allow("")
+    cards: Joi.object().required()
   };
   return Joi.validate(todo, schema);
 }
