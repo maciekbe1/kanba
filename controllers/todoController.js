@@ -9,6 +9,7 @@ exports.createTodoList = async (req, res, next) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const card = req.body.cards;
+    if (card.title === "") return res.status(400).send("Title is required");
     const user = req.body.user;
     const list = await Todo.find({ user: user });
     const obj = {
