@@ -37,7 +37,7 @@ exports.createTodoList = async (req, res, next) => {
 };
 exports.addTodoItem = async (req, res, next) => {
   try {
-    const todoID = mongoose.Types.ObjectId(req.body.listID);
+    const todoID = mongoose.Types.ObjectId(req.body.todoID);
     const cardID = req.body.cardID;
     const newItem = req.body.item;
     const todoListExist = await Todo.findById(todoID);
