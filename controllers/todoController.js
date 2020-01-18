@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import _ from "lodash";
 import cuid from "cuid";
 
-exports.createTodoList = async (req, res, next) => {
+exports.createTodoCard = async (req, res, next) => {
   try {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -73,7 +73,7 @@ exports.addTodoItem = async (req, res, next) => {
   }
 };
 
-exports.getUserTodoLists = async (req, res, next) => {
+exports.getUserTodo = async (req, res, next) => {
   try {
     const userID = mongoose.Types.ObjectId(req.body.userID);
     const user = await User.findOne({ _id: userID });
@@ -86,7 +86,7 @@ exports.getUserTodoLists = async (req, res, next) => {
     next(error);
   }
 };
-exports.removeTodoList = async (req, res, next) => {
+exports.removeTodoCard = async (req, res, next) => {
   try {
     const todoID = mongoose.Types.ObjectId(req.body.todoID);
     const todoListExist = await Todo.findById(todoID);
@@ -114,6 +114,4 @@ exports.removeTodoList = async (req, res, next) => {
     next(error);
   }
 };
-// exports.todoListUpdate = async (req, res, next) => {
-
-// }
+exports.removeCardItem = async (req, res, next) => {};
