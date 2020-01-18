@@ -24,12 +24,12 @@ exports.createTodoList = async (req, res, next) => {
         cards: [obj]
       });
       todoList = await todoList.save();
-      res.status(200).send("Todo and Card was successfully created");
+      return res.status(200).send("Todo and Card was successfully created");
     } else {
       await Todo.find({ user: user }).updateOne({
         $addToSet: { cards: obj }
       });
-      res.status(200).send("Card was successfully added to Todo");
+      return res.status(200).send("Card was successfully added to Todo");
     }
   } catch (error) {
     next(error);
@@ -40,31 +40,31 @@ exports.addTodoItem = async (req, res, next) => {
     const todoListID = mongoose.Types.ObjectId(req.body.listID);
     const cardID = req.body.cardID;
     const newItem = req.body.item;
-    const todoListExist = await Todo.find({ _id: todoListID });
+    const todoListExist = await Todo.findById(todoListID);
 
     if (_.isEmpty(todoListExist)) {
-      res.status(400).send("Todo list not found");
+      return res.status(400).send("Todo list not found");
     } else {
-      const todoList = await Todo.findById(todoListID);
       const cardExist = _.isNil(
-        _.find(todoList.cards, function(obj) {
+        _.find(todoListExist.cards, function(obj) {
           return obj.id === cardID;
         })
       );
       if (cardExist) {
-        res.status(400).send("Card list not found");
+        return res.status(400).send("Card list not found");
       } else {
-        await todoList.cards.map(cardItem => {
-          if (cardItem.id === cardID) {
-            cardItem.list.push({
-              id: cuid(),
-              title: newItem.title,
-              content: newItem.content
-            });
+        await Todo.updateOne(
+          { _id: todoListID, "cards.id": cardID },
+          {
+            $push: {
+              "cards.$.list": {
+                id: cuid(),
+                title: newItem.title,
+                content: newItem.content
+              }
+            }
           }
-        });
-        const newTodo = new Todo(todoList);
-        await newTodo.save();
+        );
         return res.status(200).send("Item added successfull");
       }
     }
@@ -77,9 +77,9 @@ exports.getUserTodoLists = async (req, res, next) => {
   try {
     const userID = mongoose.Types.ObjectId(req.body.userID);
     const user = await User.findOne({ _id: userID });
-    if (!user) res.status(400).send("User not found");
+    if (!user) return res.status(400).send("User not found");
     const list = await Todo.findOne({ user: userID }).select("-user");
-    res.status(200).send(list);
+    return res.status(200).send(list);
   } catch (error) {
     next(error);
   }
@@ -87,26 +87,25 @@ exports.getUserTodoLists = async (req, res, next) => {
 exports.removeTodoList = async (req, res, next) => {
   try {
     const todoListID = mongoose.Types.ObjectId(req.body.listID);
-    const todoListExist = await Todo.find({ _id: todoListID });
+    const todoListExist = await Todo.findById(todoListID);
+    const cardID = req.body.cardID;
+
     if (_.isEmpty(todoListExist)) {
-      res.status(400).send("Todo list not exist");
+      return res.status(400).send("Todo list not exist");
     } else {
-      const todoList = await Todo.findById(todoListID);
-      const cardID = req.body.cardID;
       const cardExist = _.isNil(
-        _.find(todoList.cards, function(obj) {
+        _.find(todoListExist.cards, function(obj) {
           return obj.id === cardID;
         })
       );
       if (cardExist) {
-        res.status(400).send("Card list not exist");
+        return res.status(400).send("Card list not exist");
       } else {
-        _.remove(todoList.cards, function(n) {
-          return n.id === cardID;
-        });
-        const removeTodo = new Todo(todoList);
-        await removeTodo.save();
-        res.status(200).send("card was successfully removed");
+        await Todo.updateOne(
+          { _id: todoListID },
+          { $pull: { cards: { id: cardID } } }
+        );
+        return res.status(200).send("card was successfully removed");
       }
     }
   } catch (error) {
