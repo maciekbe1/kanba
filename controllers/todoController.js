@@ -13,7 +13,7 @@ exports.createTodoList = async (req, res, next) => {
     const user = req.body.user;
     const list = await Todo.find({ user: user });
     const obj = {
-      id: cuid(),
+      id: card.id,
       title: card.title,
       description: card.description,
       list: []
@@ -27,7 +27,7 @@ exports.createTodoList = async (req, res, next) => {
       return res.status(200).send("Todo and Card was successfully created");
     } else {
       await Todo.find({ user: user }).updateOne({
-        $addToSet: { cards: obj }
+        $push: { cards: { $each: [obj], $position: 0 } }
       });
       return res.status(200).send("Card was successfully added to Todo");
     }
@@ -37,10 +37,10 @@ exports.createTodoList = async (req, res, next) => {
 };
 exports.addTodoItem = async (req, res, next) => {
   try {
-    const todoListID = mongoose.Types.ObjectId(req.body.listID);
+    const todoID = mongoose.Types.ObjectId(req.body.listID);
     const cardID = req.body.cardID;
     const newItem = req.body.item;
-    const todoListExist = await Todo.findById(todoListID);
+    const todoListExist = await Todo.findById(todoID);
 
     if (_.isEmpty(todoListExist)) {
       return res.status(400).send("Todo list not found");
@@ -54,7 +54,7 @@ exports.addTodoItem = async (req, res, next) => {
         return res.status(400).send("Card list not found");
       } else {
         await Todo.updateOne(
-          { _id: todoListID, "cards.id": cardID },
+          { _id: todoID, "cards.id": cardID },
           {
             $push: {
               "cards.$.list": {
@@ -78,7 +78,9 @@ exports.getUserTodoLists = async (req, res, next) => {
     const userID = mongoose.Types.ObjectId(req.body.userID);
     const user = await User.findOne({ _id: userID });
     if (!user) return res.status(400).send("User not found");
-    const list = await Todo.findOne({ user: userID }).select("-user");
+    const list = await Todo.findOne({ user: userID })
+      .select("-user")
+      .select("-__v");
     return res.status(200).send(list);
   } catch (error) {
     next(error);
@@ -86,8 +88,8 @@ exports.getUserTodoLists = async (req, res, next) => {
 };
 exports.removeTodoList = async (req, res, next) => {
   try {
-    const todoListID = mongoose.Types.ObjectId(req.body.listID);
-    const todoListExist = await Todo.findById(todoListID);
+    const todoID = mongoose.Types.ObjectId(req.body.todoID);
+    const todoListExist = await Todo.findById(todoID);
     const cardID = req.body.cardID;
 
     if (_.isEmpty(todoListExist)) {
@@ -102,7 +104,7 @@ exports.removeTodoList = async (req, res, next) => {
         return res.status(400).send("Card list not exist");
       } else {
         await Todo.updateOne(
-          { _id: todoListID },
+          { _id: todoID },
           { $pull: { cards: { id: cardID } } }
         );
         return res.status(200).send("card was successfully removed");
