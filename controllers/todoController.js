@@ -114,4 +114,24 @@ exports.removeTodoCard = async (req, res, next) => {
     next(error);
   }
 };
-exports.removeCardItem = async (req, res, next) => {};
+exports.removeTodoItem = async (req, res, next) => {
+  try {
+    const itemID = req.body.itemID;
+    const todoID = req.body.todoID;
+    const cardID = req.body.cardID;
+
+    await Todo.updateOne(
+      { _id: todoID, "cards.id": cardID },
+      {
+        $pull: {
+          "cards.$.list": {
+            id: itemID
+          }
+        }
+      }
+    );
+    return res.status(200).send("item was successfully removed");
+  } catch (error) {
+    next(error);
+  }
+};
