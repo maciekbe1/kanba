@@ -9,18 +9,21 @@ exports.createTodoCard = async (req, res, next) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const card = req.body.cards;
-    if (card.title === "") return res.status(400).send("Title is required");
-    const user = req.body.user;
-    const list = await Todo.find({ user: user });
+    const userID = mongoose.Types.ObjectId(req.body.user);
+    const user = await User.findById(userID);
+    if (_.isNil(user)) return res.status(400).send("User is not exist");
+    if (_.isEmpty(card.title)) return res.status(400).send("Title is required");
+    const userHavelist = await Todo.find({ user: userID });
     const obj = {
       id: card.id,
       title: card.title,
       description: card.description,
+      expand: false,
       list: []
     };
-    if (_.isEmpty(list)) {
+    if (_.isEmpty(userHavelist)) {
       let todoList = new Todo({
-        user: user,
+        user: userID,
         cards: [obj]
       });
       todoList = await todoList.save();
@@ -131,6 +134,20 @@ exports.removeTodoItem = async (req, res, next) => {
       }
     );
     return res.status(200).send("item was successfully removed");
+  } catch (error) {
+    next(error);
+  }
+};
+exports.updateTodoCard = async (req, res, next) => {
+  try {
+    const todoID = req.body.todoID;
+    const cardID = req.body.cardID;
+    const name = Object.keys(req.body.card)[0];
+    await Todo.updateOne(
+      { _id: todoID, "cards.id": cardID },
+      { $set: { [`cards.$.${name}`]: Object.values(req.body.card)[0] } }
+    );
+    return res.status(200).send("card was successfully updated");
   } catch (error) {
     next(error);
   }
