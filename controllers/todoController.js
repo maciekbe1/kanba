@@ -29,7 +29,7 @@ exports.createTodoCard = async (req, res, next) => {
       todoList = await todoList.save();
       return res.status(200).send("Todo and Card was successfully created");
     } else {
-      await Todo.find({ user: user }).updateOne({
+      await Todo.find({ user: userID }).updateOne({
         $push: { cards: { $each: [obj], $position: 0 } }
       });
       return res.status(200).send("Card was successfully added to Todo");
