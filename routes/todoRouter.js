@@ -4,11 +4,11 @@ import auth from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.post("/create-todo-card", auth, todoController.createTodoCard);
-router.post("/add-todo-item", auth, todoController.addTodoItem);
-router.post("/get-user-todo-cards", auth, todoController.getUserTodo);
-router.post("/remove-todo-card", auth, todoController.removeTodoCard);
-router.post("/remove-todo-item", auth, todoController.removeTodoItem);
-router.post("/update-todo-card", auth, todoController.updateTodoCard);
+router.post("/create-card", auth, todoController.createCard);
+router.post("/create-card-item", auth, todoController.createCardItem);
+router.post("/get-user-cards", auth, todoController.getUserCards);
+router.post("/remove-card", auth, todoController.removeCard);
+router.post("/remove-card-item", auth, todoController.removeCardItem);
+router.post("/update-card", auth, todoController.updateCard);
 
 module.exports = router;
