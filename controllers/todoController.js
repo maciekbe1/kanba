@@ -25,24 +25,26 @@ exports.createCardItem = async (req, res, next) => {
     const newItem = req.body.item;
     const card = await Todo.findById(cardID);
     if (_.isNil(card)) {
-      return res.status(400).send("Todo list not found");
-    } else {
-      const id = mongoose.Types.ObjectId();
-      const success = { message: "Item added successfull", id: id };
-      await Todo.updateOne(
-        { _id: cardID },
-        {
-          $push: {
-            list: {
-              _id: id,
-              title: newItem.title,
-              content: newItem.content
-            }
+      return res.status(400).send("Card not found");
+    }
+    if (_.isEmpty(newItem.title)) {
+      return res.status(400).send("title not able to be empty");
+    }
+    const id = mongoose.Types.ObjectId();
+    const success = { message: "Item added successfull", id: id };
+    await Todo.updateOne(
+      { _id: cardID },
+      {
+        $push: {
+          list: {
+            _id: id,
+            title: newItem.title,
+            content: newItem.content
           }
         }
-      );
-      return res.status(200).send(success);
-    }
+      }
+    );
+    return res.status(200).send(success);
   } catch (error) {
     next(error);
   }
