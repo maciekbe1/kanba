@@ -8,7 +8,6 @@ exports.createCard = async (req, res, next) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const userID = mongoose.Types.ObjectId(req.body.user);
-
     let card = new Card({
       user: userID,
       title: req.body.title,
