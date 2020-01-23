@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 
-const todoSchema = new mongoose.Schema({
+const cardSchema = new mongoose.Schema({
   user: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String },
@@ -9,9 +9,9 @@ const todoSchema = new mongoose.Schema({
   list: { type: Array, default: [] }
 });
 
-const Todo = mongoose.model("Todo", todoSchema);
+const Card = mongoose.model("Card", cardSchema);
 
-function validateTodo(todo) {
+function validateCard(card) {
   const schema = {
     user: Joi.string().required(),
     title: Joi.string().required(),
@@ -19,7 +19,7 @@ function validateTodo(todo) {
       .allow("")
       .optional()
   };
-  return Joi.validate(todo, schema);
+  return Joi.validate(card, schema);
 }
-exports.Todo = Todo;
-exports.validate = validateTodo;
+exports.Card = Card;
+exports.validate = validateCard;
