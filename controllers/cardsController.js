@@ -1,8 +1,9 @@
 import { Card, validate } from "../models/Card";
-import { User, Todo } from "../models/User";
+import { User } from "../models/User";
+import { Todo } from "../models/Todo";
 import mongoose from "mongoose";
 import _ from "lodash";
-
+import AsyncService from "../services/AsyncService";
 exports.createCard = async (req, res, next) => {
   try {
     const { error } = validate(req.body);
@@ -14,6 +15,20 @@ exports.createCard = async (req, res, next) => {
       description: req.body.description
     });
     card = await card.save();
+    const cardsArray = await Todo.find({ user: userID });
+
+    if (_.isEmpty(cardsArray)) {
+      let todo = new Todo({
+        user: userID,
+        cards: [card._id.toString()]
+      });
+      todo = await todo.save();
+      return res.status(200).send(card);
+    }
+    await Todo.updateOne(
+      { user: req.body.user },
+      { $push: { cards: card._id.toString() } }
+    );
     return res.status(200).send(card);
   } catch (error) {
     next(error);
@@ -40,7 +55,8 @@ exports.createCardItem = async (req, res, next) => {
             _id: id,
             title: newItem.title,
             content: newItem.content
-          }
+          },
+          $position: 0
         }
       }
     );
@@ -55,10 +71,15 @@ exports.getUserCards = async (req, res, next) => {
     const userID = mongoose.Types.ObjectId(req.body.userID);
     const user = await User.findOne({ _id: userID });
     if (!user) return res.status(400).send("User not found");
-    const list = await Card.find({ user: userID })
-      .select("-user")
-      .select("-__v");
-    return res.status(200).send(_.reverse(list));
+    const todos = await Todo.findOne({ user: req.body.userID });
+    let array = [];
+    if (todos) {
+      await AsyncService.asyncForEach(todos.cards, async card => {
+        const item = await Card.findById(mongoose.Types.ObjectId(card));
+        if (!_.isNil(item)) array.push(item);
+      });
+    }
+    return res.status(200).send(array);
   } catch (error) {
     next(error);
   }
@@ -67,10 +88,12 @@ exports.removeCard = async (req, res, next) => {
   try {
     const cardID = req.body.cardID;
     const card = await Card.findById(cardID);
+    const userID = req.body.userID;
     if (_.isEmpty(card)) {
       return res.status(400).send("Card not exist");
     } else {
       await Card.deleteOne({ _id: cardID });
+      await Todo.updateOne({ user: userID }, { $pull: { cards: cardID } });
       return res.status(200).send("card was successfully removed");
     }
   } catch (error) {
@@ -100,3 +123,10 @@ exports.updateCard = async (req, res, next) => {
     next(error);
   }
 };
+// exports.changeCardPosition = async (req,res, next) => {
+//   try {
+
+//   } catch (error) {
+//     next(error);
+//   }
+// }
