@@ -2,16 +2,16 @@ import mongoose from "mongoose";
 import Joi from "joi";
 
 const todoSchema = new mongoose.Schema({
-  userID: { type: String, required: true },
-  cardID: { type: String, required: true }
+  user: { type: String, required: true },
+  cards: { type: Array }
 });
 
 const Todo = mongoose.model("Todo", todoSchema);
 
 function validateTodo(todo) {
   const schema = {
-    userID: Joi.string().required(),
-    cardID: Joi.string().required()
+    user: Joi.string().required(),
+    cards: Joi.string().required()
   };
   return Joi.validate(todo, schema);
 }
