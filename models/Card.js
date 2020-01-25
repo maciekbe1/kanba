@@ -5,7 +5,7 @@ const cardSchema = new mongoose.Schema({
   user: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String },
-  expand: { type: Boolean, default: false },
+  expand: { type: Boolean, default: true },
   list: { type: Array, default: [] }
 });
 
