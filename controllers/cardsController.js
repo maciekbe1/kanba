@@ -27,7 +27,7 @@ exports.createCard = async (req, res, next) => {
     }
     await Todo.updateOne(
       { user: req.body.user },
-      { $push: { cards: card._id.toString() } }
+      { $push: { cards: { $each: [card._id.toString()], $position: 0 } } }
     );
     return res.status(200).send(card);
   } catch (error) {
@@ -55,8 +55,7 @@ exports.createCardItem = async (req, res, next) => {
             _id: id,
             title: newItem.title,
             content: newItem.content
-          },
-          $position: 0
+          }
         }
       }
     );
@@ -114,19 +113,31 @@ exports.updateCard = async (req, res, next) => {
   try {
     const cardID = req.body.cardID;
     const name = Object.keys(req.body.card)[0];
-    await Card.updateOne(
-      { _id: cardID },
-      { $set: { [name]: Object.values(req.body.card)[0] } }
+    const card = req.body.card;
+    if (_.isNil(card.position)) {
+      await Card.updateOne(
+        { _id: cardID },
+        { $set: { [name]: Object.values(req.body.card)[0] } }
+      );
+      return res.status(200).send("card was successfully updated");
+    }
+    await Todo.updateOne(
+      { user: card.position.userID },
+      {
+        $pull: { cards: cardID }
+      }
     );
-    return res.status(200).send("card was successfully updated");
+    await Todo.updateOne(
+      { user: card.position.userID },
+      {
+        $push: {
+          cards: { $each: [cardID], $position: card.position.destination }
+        }
+      }
+    );
+
+    return res.status(200).send("card position updated");
   } catch (error) {
     next(error);
   }
 };
-// exports.changeCardPosition = async (req,res, next) => {
-//   try {
-
-//   } catch (error) {
-//     next(error);
-//   }
-// }
