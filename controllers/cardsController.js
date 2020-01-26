@@ -114,14 +114,15 @@ exports.updateCard = async (req, res, next) => {
     const cardID = req.body.cardID;
     const name = Object.keys(req.body.card)[0];
     const card = req.body.card;
-    if (_.isNil(card.position)) {
+    const type = req.body.type;
+    if (_.isNil(type)) {
       await Card.updateOne(
         { _id: cardID },
         { $set: { [name]: Object.values(req.body.card)[0] } }
       );
       return res.status(200).send("card was successfully updated");
     }
-    if (card.position.type === "all_cards") {
+    if (type === "all_cards") {
       await Todo.updateOne(
         { user: card.position.userID },
         {
@@ -138,7 +139,7 @@ exports.updateCard = async (req, res, next) => {
       );
       return res.status(200).send("card position updated");
     }
-    if (card.position === "all_lists") {
+    if (type === "all_lists") {
       const listItem = await Card.findOne(
         {
           _id: mongoose.Types.ObjectId(card.start)
@@ -164,6 +165,35 @@ exports.updateCard = async (req, res, next) => {
         { _id: card.start },
         { $pull: { list: { _id: mongoose.Types.ObjectId(card.draggableId) } } }
       );
+      return res.status(200).send("item position updated");
+    }
+    if (type === "inside_list") {
+      const listItem = await Card.findOne(
+        {
+          _id: mongoose.Types.ObjectId(card.cardID)
+        },
+        {
+          list: {
+            $elemMatch: { _id: mongoose.Types.ObjectId(card.itemID) }
+          }
+        }
+      );
+      await Card.updateOne(
+        { _id: card.cardID },
+        { $pull: { list: { _id: mongoose.Types.ObjectId(card.itemID) } } }
+      );
+      await Card.updateOne(
+        { _id: card.cardID },
+        {
+          $push: {
+            list: {
+              $each: [listItem.list[0]],
+              $position: card.destination
+            }
+          }
+        }
+      );
+
       return res.status(200).send("item position updated");
     }
   } catch (error) {
