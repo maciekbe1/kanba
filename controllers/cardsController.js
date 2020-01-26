@@ -121,22 +121,51 @@ exports.updateCard = async (req, res, next) => {
       );
       return res.status(200).send("card was successfully updated");
     }
-    await Todo.updateOne(
-      { user: card.position.userID },
-      {
-        $pull: { cards: cardID }
-      }
-    );
-    await Todo.updateOne(
-      { user: card.position.userID },
-      {
-        $push: {
-          cards: { $each: [cardID], $position: card.position.destination }
+    if (card.position.type === "all_cards") {
+      await Todo.updateOne(
+        { user: card.position.userID },
+        {
+          $pull: { cards: cardID }
         }
-      }
-    );
-
-    return res.status(200).send("card position updated");
+      );
+      await Todo.updateOne(
+        { user: card.position.userID },
+        {
+          $push: {
+            cards: { $each: [cardID], $position: card.position.destination }
+          }
+        }
+      );
+      return res.status(200).send("card position updated");
+    }
+    if (card.position === "all_lists") {
+      const listItem = await Card.findOne(
+        {
+          _id: mongoose.Types.ObjectId(card.start)
+        },
+        {
+          list: {
+            $elemMatch: { _id: mongoose.Types.ObjectId(card.draggableId) }
+          }
+        }
+      );
+      await Card.updateOne(
+        { _id: card.end },
+        {
+          $push: {
+            list: {
+              $each: [listItem.list[0]],
+              $position: card.destination
+            }
+          }
+        }
+      );
+      await Card.updateOne(
+        { _id: card.start },
+        { $pull: { list: { _id: mongoose.Types.ObjectId(card.draggableId) } } }
+      );
+      return res.status(200).send("item position updated");
+    }
   } catch (error) {
     next(error);
   }
