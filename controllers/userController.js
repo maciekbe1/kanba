@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import crypto from "crypto";
 import { User, validate } from "../models/User";
 import _ from "lodash";
@@ -56,9 +56,9 @@ exports.signUp = async (req, res) => {
   if (user) return res.status(400).send("User already exist.");
 
   user = new User(_.pick(req.body, ["name", "password", "email"]));
-  const salt = await bcrypt.genSalt(10);
+  const salt = await bcryptjs.genSalt(10);
   const random = crypto.randomBytes(20).toString("hex");
-  user.password = await bcrypt.hash(user.password, salt);
+  user.password = await bcryptjs.hash(user.password, salt);
   user.accountConfirmation = random;
 
   await user.save();
@@ -152,8 +152,8 @@ exports.setPassword = async (req, res) => {
       .status(400)
       .send("Password length must equal 5 character or be longer.");
 
-  const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(password, salt);
+  const salt = await bcryptjs.genSalt(10);
+  user.password = await bcryptjs.hash(password, salt);
   user.emailConfirmation = "";
   await user.save();
   return res.status(200).json({
