@@ -9,15 +9,16 @@ exports.createCard = async (req, res, next) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const userID = mongoose.Types.ObjectId(req.body.user);
+    const cardsArray = await Todo.findOne({ user: userID });
+    if (cardsArray?.cards?.length >= 100)
+      return res.status(405).send("Liczba kart została przekroczona.");
     let card = new Card({
       user: userID,
       title: req.body.title,
       description: req.body.description
     });
     card = await card.save();
-    const cardsArray = await Todo.find({ user: userID });
-
-    if (_.isEmpty(cardsArray)) {
+    if (_.isNull(cardsArray)) {
       let todo = new Todo({
         user: userID,
         cards: [card._id.toString()]
@@ -39,12 +40,15 @@ exports.createCardItem = async (req, res, next) => {
     const cardID = req.body.cardID;
     const newItem = req.body.item;
     const card = await Card.findById(cardID);
+    const quantity = card.list.length;
     if (_.isNil(card)) {
-      return res.status(400).send("Card not found");
+      return res.status(400).send("Nie znaleziono karty.");
     }
     if (_.isEmpty(newItem.title)) {
-      return res.status(400).send("title not able to be empty");
+      return res.status(405).send("Tytuł nie moze byc pusty.");
     }
+    if (quantity > 1000)
+      return res.status(405).send("Ilość zadań została przekroczona");
     const id = mongoose.Types.ObjectId();
     const success = { message: "Item added successfull", id: id };
     await Card.updateOne(
@@ -89,7 +93,7 @@ exports.removeCard = async (req, res, next) => {
     const card = await Card.findById(cardID);
     const userID = req.body.userID;
     if (_.isEmpty(card)) {
-      return res.status(400).send("Card not exist");
+      return res.status(400).send("Karta nie istnieje");
     } else {
       await Card.deleteOne({ _id: cardID });
       await Todo.updateOne({ user: userID }, { $pull: { cards: cardID } });
