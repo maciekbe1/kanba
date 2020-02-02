@@ -62,7 +62,7 @@ const connectDb = () => {
 };
 connectDb()
   .then(async () => {
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT || 8080, () => {
       console.log("server running");
     });
   })
