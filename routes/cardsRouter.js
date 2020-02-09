@@ -10,5 +10,6 @@ router.post("/get-user-cards", auth, cardsController.getUserCards);
 router.post("/remove-card", auth, cardsController.removeCard);
 router.post("/remove-card-item", auth, cardsController.removeCardItem);
 router.post("/update-card", auth, cardsController.updateCard);
+router.post("/update-item", auth, cardsController.updateItem);
 
 module.exports = router;

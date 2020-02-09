@@ -204,3 +204,25 @@ exports.updateCard = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.updateItem = async (req, res, next) => {
+  try {
+    const cardID = mongoose.Types.ObjectId(req.body.cardID);
+    const itemID = mongoose.Types.ObjectId(req.body.itemID);
+    const content = req.body.content;
+    await Card.updateOne(
+      {
+        _id: cardID,
+        list: {
+          $elemMatch: { _id: itemID }
+        }
+      },
+      {
+        $set: { "list.$.content": content }
+      }
+    );
+    return res.status(200).send("zadanie zostało zaktualizowane");
+  } catch (error) {
+    next(error);
+  }
+};
