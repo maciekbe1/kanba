@@ -120,6 +120,9 @@ exports.updateCard = async (req, res, next) => {
     const card = req.body.card;
     const type = req.body.type;
     if (_.isNil(type)) {
+      if (Object.values(req.body.card)[0].length === 0) {
+        return res.status(400).send("Karta musi mieć nazwę");
+      }
       await Card.updateOne(
         { _id: cardID },
         { $set: { [name]: Object.values(req.body.card)[0] } }
@@ -209,7 +212,14 @@ exports.updateItem = async (req, res, next) => {
   try {
     const cardID = mongoose.Types.ObjectId(req.body.cardID);
     const itemID = mongoose.Types.ObjectId(req.body.itemID);
-    const content = req.body.content;
+    const item = req.body.item;
+    const name = Object.keys(req.body.item)[0];
+    if (
+      Object.keys(req.body.item)[0] === "title" &&
+      Object.values(req.body.item)[0].length === 0
+    ) {
+      return res.status(400).send("Zadanie musi mieć nazwę");
+    }
     await Card.updateOne(
       {
         _id: cardID,
@@ -218,7 +228,7 @@ exports.updateItem = async (req, res, next) => {
         }
       },
       {
-        $set: { "list.$.content": content }
+        $set: { [`list.$.${name}`]: Object.values(item)[0] }
       }
     );
     return res.status(200).send("zadanie zostało zaktualizowane");
