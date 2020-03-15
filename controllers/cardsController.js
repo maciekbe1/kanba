@@ -58,7 +58,8 @@ exports.createCardItem = async (req, res, next) => {
           list: {
             _id: id,
             title: newItem.title,
-            content: newItem.content
+            content: newItem.content,
+            cardID: cardID
           }
         }
       }
@@ -157,6 +158,7 @@ exports.updateCard = async (req, res, next) => {
           }
         }
       );
+      listItem.list[0].cardID = card.end;
       await Card.updateOne(
         { _id: card.end },
         {
@@ -189,6 +191,7 @@ exports.updateCard = async (req, res, next) => {
         { _id: card.cardID },
         { $pull: { list: { _id: mongoose.Types.ObjectId(card.itemID) } } }
       );
+      listItem.list[0].cardID = card.cardID;
       await Card.updateOne(
         { _id: card.cardID },
         {
@@ -232,6 +235,54 @@ exports.updateItem = async (req, res, next) => {
       }
     );
     return res.status(200).send("zadanie zostało zaktualizowane");
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateManyItems = async (req, res, next) => {
+  try {
+    const destination = req.body.destination;
+    const selectedItems = req.body.selectedItems;
+    const position = req.body.position;
+
+    let itemArray = [];
+
+    await AsyncService.asyncForEach(
+      selectedItems,
+      async ({ itemID, cardID }) => {
+        const listItem = await Card.findOne(
+          {
+            _id: mongoose.Types.ObjectId(cardID)
+          },
+          {
+            list: {
+              $elemMatch: { _id: mongoose.Types.ObjectId(itemID) }
+            }
+          }
+        );
+
+        listItem.list[0].cardID = destination;
+        itemArray.push(listItem.list[0]);
+        await Card.updateOne(
+          { _id: cardID },
+          { $pull: { list: { _id: mongoose.Types.ObjectId(itemID) } } }
+        );
+      }
+    );
+
+    await Card.updateOne(
+      { _id: destination },
+      {
+        $push: {
+          list: {
+            $each: itemArray,
+            $position: position
+          }
+        }
+      }
+    );
+    return res.status(200).send("zadania zostały zaktualizowane");
   } catch (error) {
     next(error);
   }
