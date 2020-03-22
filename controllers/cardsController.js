@@ -287,3 +287,18 @@ exports.updateManyItems = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.removeManyItems = async (req, res, next) => {
+  try {
+    const selected = req.body.selected;
+    await AsyncService.asyncForEach(selected, async ({ itemID, cardID }) => {
+      await Card.updateOne(
+        { _id: cardID },
+        { $pull: { list: { _id: mongoose.Types.ObjectId(itemID) } } }
+      );
+    });
+    return res.status(200).send("zadania zostały usunięte");
+  } catch (error) {
+    next(error);
+  }
+};
