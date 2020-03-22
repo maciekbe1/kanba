@@ -12,5 +12,6 @@ router.post("/remove-card-item", auth, cardsController.removeCardItem);
 router.post("/update-card", auth, cardsController.updateCard);
 router.post("/update-item", auth, cardsController.updateItem);
 router.post("/update-many-items", auth, cardsController.updateManyItems);
+router.post("/remove-many-items", auth, cardsController.removeManyItems);
 
 module.exports = router;
