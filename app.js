@@ -46,8 +46,8 @@ app.use((error, req, res, next) => {
   const message = error.message;
   res.status(status).json({ message: message });
 });
-const connectDb = () => {
-  return mongoose.connect(
+const connectDb = async () => {
+  return await mongoose.connect(
     process.env.MONGO_URI,
     {
       useNewUrlParser: true,
