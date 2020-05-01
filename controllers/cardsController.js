@@ -50,7 +50,7 @@ exports.createCardItem = async (req, res, next) => {
     if (quantity > 1000)
       return res.status(405).send("Ilość zadań została przekroczona");
     const id = mongoose.Types.ObjectId();
-    const success = { message: "Item added successfull", id: id };
+    const success = { message: "Zadanie zostało pomyślnie dodane", id: id };
     await Card.updateOne(
       { _id: cardID },
       {
@@ -59,7 +59,10 @@ exports.createCardItem = async (req, res, next) => {
             _id: id,
             title: newItem.title,
             content: newItem.content,
-            cardID: cardID
+            cardID: cardID,
+            date: Date.now(),
+            status: newItem.status,
+            priority: newItem.priority
           }
         }
       }
@@ -78,7 +81,7 @@ exports.getUserCards = async (req, res, next) => {
     const todos = await Todo.findOne({ user: req.body.userID });
     let array = [];
     if (todos) {
-      await AsyncService.asyncForEach(todos.cards, async card => {
+      await AsyncService.asyncForEach(todos.cards, async (card) => {
         const item = await Card.findById(mongoose.Types.ObjectId(card));
         if (!_.isNil(item)) array.push(item);
       });

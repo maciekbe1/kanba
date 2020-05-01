@@ -6,7 +6,8 @@ const cardSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
   expand: { type: Boolean, default: true },
-  list: { type: Array, default: [] }
+  list: { type: Array, default: [] },
+  date: { type: String, default: Date.now() }
 });
 
 const Card = mongoose.model("Card", cardSchema);
@@ -15,9 +16,7 @@ function validateCard(card) {
   const schema = {
     user: Joi.string().required(),
     title: Joi.string().required(),
-    description: Joi.string()
-      .allow("")
-      .optional()
+    description: Joi.string().allow("").optional()
   };
   return Joi.validate(card, schema);
 }
