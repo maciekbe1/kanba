@@ -18,7 +18,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
-clean-sylph-279310-d91c1dd6077d.json
+
 
 npm-debug.log*
 yarn-debug.log*
