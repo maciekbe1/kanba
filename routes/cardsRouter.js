@@ -1,8 +1,15 @@
 import express from "express";
 import cardsController from "../controllers/cardsController";
 import auth from "../middleware/authMiddleware";
+import multer from "multer";
 
 const router = express.Router();
+const multerMid = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
+});
 
 router.post("/create-card", auth, cardsController.createCard);
 router.post("/create-card-item", auth, cardsController.createCardItem);
@@ -13,5 +20,12 @@ router.post("/update-card", auth, cardsController.updateCard);
 router.post("/update-item", auth, cardsController.updateItem);
 router.post("/update-many-items", auth, cardsController.updateManyItems);
 router.post("/remove-many-items", auth, cardsController.removeManyItems);
+router.post(
+  "/upload-file",
+  [auth, multerMid.single("file")],
+  cardsController.uploadFile
+);
+router.post("/remove-file", auth, cardsController.removeFile);
+router.get("/get-content", auth, cardsController.getContent);
 
 module.exports = router;
