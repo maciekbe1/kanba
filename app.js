@@ -64,10 +64,10 @@ connectDb()
   .then(async () => {
     const server = app.listen(process.env.PORT || 8080);
     const io = require("socket.io")(server);
-    io.on("connection", socket => {
+    io.on("connection", (socket) => {
       console.log("client connected");
     });
   })
-  .catch(err => {
+  .catch((err) => {
     console.log(err);
   });
