@@ -8,7 +8,7 @@ import path from "path";
 import { Storage } from "@google-cloud/storage";
 
 const storage = new Storage({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  keyFilename: path.join(__dirname, process.env.GOOGLE_APPLICATION_CREDENTIALS),
   projectId: "clean-sylph-279310"
 });
 
