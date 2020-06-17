@@ -8,10 +8,13 @@ import path from "path";
 import { Storage } from "@google-cloud/storage";
 
 const storage = new Storage({
-  keyFilename: path.join(__dirname, process.env.GOOGLE_APPLICATION_CREDENTIALS),
+  keyFilename: path.join(
+    __dirname,
+    `../${process.env.GOOGLE_APPLICATION_CREDENTIALS}`
+  ),
   projectId: "clean-sylph-279310"
 });
-
+//
 const bucket = storage.bucket("kanba-cards");
 exports.createCard = async (req, res, next) => {
   try {
