@@ -67,6 +67,7 @@ exports.createCardItem = async (req, res, next) => {
       date: Date.now(),
       status: newItem.status,
       priority: newItem.priority,
+      labels: [],
       attachments: _.isEmpty(newItem.attachments)
         ? []
         : [...newItem.attachments]
@@ -115,6 +116,13 @@ exports.removeCard = async (req, res, next) => {
     if (_.isEmpty(card)) {
       return res.status(400).send("Karta nie istnieje");
     } else {
+      await AsyncService.asyncForEach(card.list, async (item) => {
+        if (item.attachments.length) {
+          item.attachments.forEach(async (file) => {
+            await bucket.file(file.storageName).delete();
+          });
+        }
+      });
       await Card.deleteOne({ _id: cardID });
       await Todo.updateOne({ user: userID }, { $pull: { cards: cardID } });
       return res.status(200).send("card was successfully removed");
@@ -125,10 +133,11 @@ exports.removeCard = async (req, res, next) => {
 };
 exports.removeCardItem = async (req, res, next) => {
   try {
-    const itemID = mongoose.Types.ObjectId(req.body.itemID);
-    const cardID = req.body.cardID;
-    await Card.updateOne({ _id: cardID }, { $pull: { list: { _id: itemID } } });
-    return res.status(200).send("item was successfully removed");
+    // const itemID = mongoose.Types.ObjectId(req.body.itemID);
+    // const cardID = req.body.cardID;
+    // await Card.updateOne({ _id: cardID }, { $pull: { list: { _id: itemID } } });
+    // return res.status(200).send("item was successfully removed");
+    return res.status(200).send("Deprecated item removing.");
   } catch (error) {
     next(error);
   }
@@ -309,6 +318,21 @@ exports.removeManyItems = async (req, res, next) => {
   try {
     const selected = req.body.selected;
     await AsyncService.asyncForEach(selected, async ({ itemID, cardID }) => {
+      const listItem = await Card.findOne(
+        {
+          _id: mongoose.Types.ObjectId(cardID)
+        },
+        {
+          list: {
+            $elemMatch: { _id: mongoose.Types.ObjectId(itemID) }
+          }
+        }
+      );
+      if (listItem.list[0].attachments.length) {
+        listItem.list[0].attachments.forEach(async (file) => {
+          await bucket.file(file.storageName).delete();
+        });
+      }
       await Card.updateOne(
         { _id: cardID },
         { $pull: { list: { _id: mongoose.Types.ObjectId(itemID) } } }
