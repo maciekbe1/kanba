@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon --exec babel-node app.js"
+    "start": "nodemon --exec babel-node app.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,12 @@
     "cuid": "^2.1.8",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
     "google-auth-library": "^6.0.1",
     "helmet": "^3.22.0",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mongodb": "^3.5.8",
     "mongoose": "^5.9.17",
     "morgan": "^1.10.0",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/node": "^7.10.1",
-    "@babel/preset-env": "^7.10.2"
+    "@babel/preset-env": "^7.10.2",
+    "jest": "^26.1.0"
   }
 }
