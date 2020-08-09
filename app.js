@@ -11,7 +11,10 @@ import userRouter from "./routes/userRouter";
 import authRouter from "./routes/authRouter";
 import cardsRouter from "./routes/cardsRouter";
 
+import error from "./middleware/error";
+
 require("dotenv").config();
+require("express-async-errors");
 
 const app = express();
 // create application/json parser
@@ -41,11 +44,8 @@ app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/cards", cardsRouter);
 
-app.use((error, req, res, next) => {
-  const status = error.statusCode || 500;
-  const message = error.message;
-  res.status(status).json({ message: message });
-});
+app.use(error);
+
 const connectDb = async () => {
   return await mongoose.connect(
     process.env.MONGO_URI,
