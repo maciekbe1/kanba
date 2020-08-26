@@ -2,7 +2,7 @@ import { Card, validate } from "../models/Card";
 import { User } from "../models/User";
 import { Todo } from "../models/Todo";
 import mongoose from "mongoose";
-import _ from "lodash";
+import _, { isUndefined } from "lodash";
 import AsyncService from "../services/AsyncService";
 import path from "path";
 import { Storage } from "@google-cloud/storage";
@@ -46,6 +46,7 @@ exports.createCardItem = async (req, res) => {
   const newItem = req.body.item;
   const card = await Card.findById(cardID);
   const quantity = card.list.length;
+
   if (_.isNil(card)) {
     return res.status(400).send("Card not found");
   }
@@ -58,7 +59,7 @@ exports.createCardItem = async (req, res) => {
   const itemSchema = {
     _id: id,
     title: newItem.title,
-    content: newItem.content,
+    description: newItem.description,
     cardID: cardID,
     date: Date.now(),
     status: newItem.status,
@@ -105,7 +106,7 @@ exports.removeCard = async (req, res) => {
     return res.status(400).send("Karta nie istnieje");
   } else {
     await AsyncService.asyncForEach(card.list, async (item) => {
-      if (item.attachments.length) {
+      if (!isUndefined(item.attachments)) {
         item.attachments.forEach(async (file) => {
           await bucket.file(file.storageName).delete();
         });
