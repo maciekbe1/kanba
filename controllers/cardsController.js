@@ -2,7 +2,7 @@ import { Card, validate } from "../models/Card";
 import { User } from "../models/User";
 import { Todo } from "../models/Todo";
 import mongoose from "mongoose";
-import _ from "lodash";
+import _, { isUndefined } from "lodash";
 import AsyncService from "../services/AsyncService";
 import path from "path";
 import { Storage } from "@google-cloud/storage";
@@ -20,7 +20,7 @@ exports.createCard = async (req, res) => {
   const userID = mongoose.Types.ObjectId(req.body.user);
   const cardsArray = await Todo.findOne({ user: userID });
   if (cardsArray?.cards?.length >= 100)
-    return res.status(405).send("Liczba kart została przekroczona.");
+    return res.status(405).send("card quantity exceeded");
   let card = new Card({
     user: userID,
     title: req.body.title,
@@ -46,26 +46,28 @@ exports.createCardItem = async (req, res) => {
   const newItem = req.body.item;
   const card = await Card.findById(cardID);
   const quantity = card.list.length;
+
   if (_.isNil(card)) {
-    return res.status(400).send("Nie znaleziono karty.");
+    return res.status(400).send("Card not found");
   }
   if (_.isEmpty(newItem.title)) {
-    return res.status(405).send("Tytuł nie moze byc pusty.");
+    return res.status(405).send("Title can't be empty");
   }
-  if (quantity > 1000)
-    return res.status(405).send("Ilość zadań została przekroczona");
+  if (quantity > 1000) return res.status(405).send("Item quantity exceeded");
   const id = mongoose.Types.ObjectId();
+
   const itemSchema = {
     _id: id,
     title: newItem.title,
-    content: newItem.content,
+    description: newItem.description,
     cardID: cardID,
     date: Date.now(),
     status: newItem.status,
     priority: newItem.priority,
     labels: [],
-    attachments: _.isEmpty(newItem.attachments) ? [] : [...newItem.attachments]
+    attachments: []
   };
+
   await Card.updateOne(
     { _id: cardID },
     {
@@ -75,7 +77,7 @@ exports.createCardItem = async (req, res) => {
     }
   );
   const success = {
-    message: "Zadanie zostało pomyślnie dodane",
+    message: "Item was successfuly added",
     item: itemSchema
   };
   return res.status(200).send(success);
@@ -104,7 +106,7 @@ exports.removeCard = async (req, res) => {
     return res.status(400).send("Karta nie istnieje");
   } else {
     await AsyncService.asyncForEach(card.list, async (item) => {
-      if (item.attachments.length) {
+      if (!isUndefined(item.attachments)) {
         item.attachments.forEach(async (file) => {
           await bucket.file(file.storageName).delete();
         });
@@ -131,7 +133,7 @@ exports.updateCard = async (req, res) => {
   const type = req.body.type;
   if (_.isNil(type)) {
     if (Object.values(req.body.card)[0].length === 0) {
-      return res.status(400).send("Karta musi mieć nazwę");
+      return res.status(400).send("Card must have name");
     }
     await Card.updateOne(
       { _id: cardID },
@@ -154,7 +156,7 @@ exports.updateCard = async (req, res) => {
         }
       }
     );
-    return res.status(200).send("card position updated");
+    return res.status(200).send("Card position updated");
   }
   if (type === "all_lists") {
     const listItem = await Card.findOne(
@@ -183,7 +185,7 @@ exports.updateCard = async (req, res) => {
       { _id: card.start },
       { $pull: { list: { _id: mongoose.Types.ObjectId(card.draggableId) } } }
     );
-    return res.status(200).send("item position updated");
+    return res.status(200).send("Item position updated");
   }
   if (type === "inside_list") {
     const listItem = await Card.findOne(
@@ -212,7 +214,7 @@ exports.updateCard = async (req, res) => {
         }
       }
     );
-    return res.status(200).send("item position updated");
+    return res.status(200).send("Item position updated");
   }
 };
 
@@ -224,7 +226,7 @@ exports.updateItem = async (req, res) => {
     Object.keys(req.body.item)[0] === "title" &&
     Object.values(req.body.item)[0].length === 0
   ) {
-    return res.status(400).send("Zadanie musi mieć nazwę");
+    return res.status(400).send("Item must have name");
   }
   await Card.updateOne(
     {
@@ -236,7 +238,7 @@ exports.updateItem = async (req, res) => {
       $set: { [`list.$.${name}`]: Object.values(item)[0] }
     }
   );
-  return res.status(200).send("zadanie zostało zaktualizowane");
+  return res.status(200).send("Item was updated");
 };
 
 exports.updateManyItems = async (req, res) => {
@@ -277,7 +279,7 @@ exports.updateManyItems = async (req, res) => {
       }
     }
   );
-  return res.status(200).send("zadania zostały zaktualizowane");
+  return res.status(200).send("Items was updated");
 };
 
 exports.removeManyItems = async (req, res) => {
@@ -303,7 +305,7 @@ exports.removeManyItems = async (req, res) => {
       { $pull: { list: { _id: mongoose.Types.ObjectId(itemID) } } }
     );
   });
-  return res.status(200).send("zadania zostały usunięte");
+  return res.status(200).send("Items was deleted");
 };
 
 exports.getContent = async (req, res) => {
@@ -345,9 +347,9 @@ exports.uploadFile = async (req, res) => {
       $push: {
         "list.$.attachments": {
           _id: id,
-          fileLocation: publicUrl,
-          mimetype: file.mimetype,
-          fileName: originalname,
+          content: publicUrl,
+          type: file.mimetype,
+          name: originalname,
           storageName: blob.name,
           size: file.size
         }
@@ -359,10 +361,10 @@ exports.uploadFile = async (req, res) => {
       itemID: itemID,
       file: {
         _id: id,
-        fileName: originalname,
+        name: originalname,
         storageName: blob.name,
-        fileLocation: publicUrl,
-        mimetype: file.mimetype,
+        content: publicUrl,
+        type: file.mimetype,
         size: file.size
       }
     });
@@ -371,7 +373,7 @@ exports.uploadFile = async (req, res) => {
 };
 
 exports.removeFile = async (req, res) => {
-  const fileName = req.body.fileName;
+  const name = req.body.name;
   const fileID = req.body.fileID;
   const itemID = req.body.itemID;
 
@@ -391,10 +393,10 @@ exports.removeFile = async (req, res) => {
   );
 
   await bucket
-    .file(fileName)
+    .file(name)
     .delete()
     .then(() => {
-      res.status(200).send({ message: "plik usunięto" });
+      res.status(200).send({ message: "File was deleted" });
     })
     .catch((err) => {
       res.status(400).send({ message: err });
