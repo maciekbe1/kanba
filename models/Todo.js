@@ -9,11 +9,11 @@ const todoSchema = new mongoose.Schema({
 const Todo = mongoose.model("Todo", todoSchema);
 
 function validateTodo(todo) {
-  const schema = {
+  const schema = Joi.object({
     user: Joi.string().required(),
     cards: Joi.string().required()
-  };
-  return Joi.validate(todo, schema);
+  });
+  return schema.validate(todo);
 }
 exports.Todo = Todo;
 exports.validate = validateTodo;
