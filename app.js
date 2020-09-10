@@ -1,7 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import cors from "cors";
 import mongoose from "mongoose";
 import morgan from "morgan";
 
@@ -22,22 +21,21 @@ var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", true);
   res.setHeader(
     "Access-Control-Allow-Methods",
     "OPTIONS, GET, POST, PUT, PATCH, DELETE"
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   next();
 });
 
-app.use(
-  cors({ origin: process.env.FRONT_URL, credentials: true }),
-  cookieParser(),
-  jsonParser,
-  urlencodedParser,
-  morgan("tiny")
-);
+app.use(cookieParser(), jsonParser, urlencodedParser, morgan("tiny"));
+
 app.use("/api/projects", projectRouter);
 app.use("/api/tasks", taskRouter);
 app.use("/api/users", userRouter);

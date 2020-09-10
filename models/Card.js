@@ -13,12 +13,12 @@ const cardSchema = new mongoose.Schema({
 const Card = mongoose.model("Card", cardSchema);
 
 function validateCard(card) {
-  const schema = {
+  const schema = Joi.object({
     user: Joi.string().required(),
     title: Joi.string().required(),
     description: Joi.string().allow("").optional()
-  };
-  return Joi.validate(card, schema);
+  });
+  return schema.validate(card);
 }
 exports.Card = Card;
 exports.validate = validateCard;

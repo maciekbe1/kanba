@@ -16,7 +16,7 @@ exports.me = async (req, res) => {
 exports.getUser = (req, res, next) => {
   const userID = req.params.id;
   User.findById(userID)
-    .then(user => {
+    .then((user) => {
       if (!user) {
         const error = new Error("Could not find user.");
         error.statusCode = 404;
@@ -24,7 +24,7 @@ exports.getUser = (req, res, next) => {
       }
       res.status(200).json({ message: "User fetched.", user: user });
     })
-    .catch(err => {
+    .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
@@ -34,14 +34,14 @@ exports.getUser = (req, res, next) => {
 
 exports.getAllUsers = (req, res, next) => {
   User.find()
-    .then(users => {
+    .then((users) => {
       res.status(200).json({
         message: "Fetched users successfully.",
         users: users,
         userLength: users.length
       });
     })
-    .catch(err => {
+    .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
@@ -82,7 +82,7 @@ exports.signUp = async (req, res) => {
     subject: "Kanba Welcome",
     html: `Hello,<br> Please Click on the link to verify your email.<br><a href="${process.env.FRONT_URL}/verify/${random}">Click here to verify</a>`
   };
-  transporter.sendMail(mailOptions, function(err, info) {
+  transporter.sendMail(mailOptions, function (err, info) {
     if (err) console.log(err);
     else console.log(info);
   });
@@ -133,7 +133,7 @@ exports.resetPassword = async (req, res) => {
     subject: "Kanba - reset password request",
     html: `Hello,<br> Please Click on the link to set a new password to your account.<br><a href="${process.env.FRONT_URL}/set-password/${random}">Set new password</a>`
   };
-  transporter.sendMail(mailOptions, function(err, info) {
+  transporter.sendMail(mailOptions, function (err, info) {
     if (err) console.log(err);
     else console.log(info);
   });

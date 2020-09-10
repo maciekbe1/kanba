@@ -24,7 +24,8 @@ exports.signIn = async (req, res, next) => {
       return res.status(400).send("User is not confirm. Check your email.");
 
     const token = user.generateAuthToken();
-    res.send(token);
+    res.cookie("token", token, { httpOnly: true, sameSite: true });
+    res.json({ token });
   } catch (err) {
     next(err);
   }
@@ -38,16 +39,13 @@ exports.googleSignIn = async (req, res, next) => {
     // user ? user : createNewUser(googleUser, res);
     if (user) {
       const token = user.generateAuthToken();
-      res.send(token);
+      res.cookie("token", token, { httpOnly: true, sameSite: true });
+      res.json({ token });
     } else {
       const { name, email, picture } = googleUser;
       const random =
-        Math.random()
-          .toString(36)
-          .substring(2, 15) +
-        Math.random()
-          .toString(36)
-          .substring(2, 15);
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
       const salt = await bcryptjs.genSalt(10);
       const hashedPassword = await bcryptjs.hash(random, salt);
       const user = {
@@ -75,7 +73,7 @@ exports.googleSignIn = async (req, res, next) => {
         html: `Hello,<br> Your new password is.<br>${random}<br>Please change password after login to be more secured.`
       };
 
-      transporter.sendMail(mailOptions, function(err, info) {
+      transporter.sendMail(mailOptions, function (err, info) {
         if (err) console.log(err);
         else console.log(info);
       });
@@ -91,7 +89,7 @@ exports.googleSignIn = async (req, res, next) => {
   }
 };
 
-const verifyAuthToken = async token => {
+const verifyAuthToken = async (token) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -103,19 +101,12 @@ const verifyAuthToken = async token => {
   }
 };
 
-const checkIfUserExist = async email => await User.findOne({ email }).exec();
+const checkIfUserExist = async (email) => await User.findOne({ email }).exec();
 
 function validate(req) {
-  const schema = {
-    email: Joi.string()
-      .min(5)
-      .max(50)
-      .required()
-      .email(),
-    password: Joi.string()
-      .min(5)
-      .max(1024)
-      .required()
-  };
-  return Joi.validate(req, schema);
+  const schema = Joi.object({
+    email: Joi.string().min(5).max(50).required().email(),
+    password: Joi.string().min(5).max(1024).required()
+  });
+  return schema.validate(req);
 }
