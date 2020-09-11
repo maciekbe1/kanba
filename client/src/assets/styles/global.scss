@@ -1,0 +1,19 @@
+@import "../../components/Cards/_cards.scss";
+@import "../../components/Editor/_editor.scss";
+@import "../../components/Common/_common.scss";
+
+.flex {
+  display: flex;
+}
+.justify-center {
+  justify-content: center;
+}
+.space-between {
+  justify-content: space-between;
+}
+.align-center {
+  align-items: center;
+}
+.w-100 {
+  width: 100%;
+}

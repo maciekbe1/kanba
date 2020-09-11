@@ -1,0 +1,111 @@
+@import "./content-item/content-item";
+
+.card-component {
+  .MuiCardContent-root:last-child {
+    padding-bottom: 16px;
+  }
+  .card-navbar-component {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    .card-component-navbar-actions {
+      display: flex;
+      align-items: center;
+    }
+    .title-component {
+      margin-bottom: 5px;
+      .title {
+        font-weight: bold;
+        font-size: 2em;
+      }
+    }
+  }
+  .card-item {
+    margin-top: -1px;
+    background: inherit;
+    border: 1px solid rgb(204, 204, 204);
+    transition: margin 0.15s ease-in-out 0s;
+    .card-item-container {
+      cursor: pointer;
+      .item-title-text {
+        word-break: break-word;
+      }
+      .card-item-icons {
+        padding: 5px;
+        border-radius: 50%;
+        width: auto;
+        height: min-content;
+      }
+      .item-info-container {
+        display: flex;
+        margin-right: 10px;
+        .item-icon {
+          color: #fff;
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+  }
+  .card-item.expand {
+    &:hover {
+      background: inherit;
+    }
+    margin: 8px 0;
+    transition: margin 0.15s ease-in-out 0s;
+    box-shadow: rgba(37, 42, 49, 0.16) 0px 1px 4px 0px,
+      rgba(37, 42, 49, 0.12) 0px 4px 8px 0px;
+    border: none;
+    border-radius: 5px;
+    border: 1px solid rgb(204, 204, 204);
+  }
+  .card-description {
+    .content-description-title {
+      margin-left: 4px;
+    }
+  }
+}
+
+.light {
+  .card-item {
+    &:hover {
+      background: rgb(239, 242, 245);
+    }
+  }
+  .card-item-selected {
+    background: rgb(239, 242, 245);
+  }
+  .card-description-textbox {
+    &:hover {
+      background: rgb(239, 242, 245);
+    }
+  }
+}
+.dark {
+  .card-item {
+    &:hover {
+      background: #616161;
+    }
+  }
+  .card-item-selected {
+    background: #616161;
+  }
+  .card-description-textbox {
+    &:hover {
+      background: #616161;
+    }
+  }
+}
+
+input[type="file"] {
+  display: none;
+}
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+#tags-filled {
+  min-width: auto;
+}

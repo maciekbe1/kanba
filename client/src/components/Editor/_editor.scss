@@ -1,0 +1,16 @@
+.editor-buttons-container button {
+  &:first-child {
+    margin-right: 5px;
+  }
+  text-transform: none;
+  margin-top: 1rem;
+}
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused),
+.ck.ck-editor__main > .ck-editor__editable.ck-focused {
+  background: inherit;
+}
+
+.ck-editor__editable {
+  min-height: 100px !important;
+  word-break: break-word;
+}

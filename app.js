@@ -11,6 +11,7 @@ import authRouter from "./routes/authRouter";
 import cardsRouter from "./routes/cardsRouter";
 
 import error from "./middleware/error";
+const path = require("path");
 
 require("dotenv").config();
 require("express-async-errors");
@@ -20,19 +21,19 @@ const app = express();
 var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", true);
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", true);
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Content-Type, Authorization",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 app.use(cookieParser(), jsonParser, urlencodedParser, morgan("tiny"));
 
@@ -44,6 +45,12 @@ app.use("/api/cards", cardsRouter);
 
 app.use(error);
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  });
+}
 const connectDb = async () => {
   return await mongoose.connect(
     process.env.MONGO_URI,
@@ -60,7 +67,7 @@ const connectDb = async () => {
 };
 connectDb()
   .then(async () => {
-    const server = app.listen(process.env.PORT || 8080);
+    const server = app.listen(process.env.PORT || 4000);
     const io = require("socket.io")(server);
     io.on("connection", (socket) => {
       console.log("client connected");

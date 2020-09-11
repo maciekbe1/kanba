@@ -1,0 +1,43 @@
+.title-component {
+  position: relative;
+  word-break: break-word;
+  width: fit-content;
+  .title {
+    display: block;
+    border: 3px solid transparent;
+    &:hover {
+      cursor: pointer;
+      background-color: #e5e5e5;
+      border-radius: 5px;
+      color: #212121;
+      padding: 0 5px;
+      margin-left: -5px;
+    }
+    &:focus {
+      background-color: #fff;
+      border: 3px solid #1565c0;
+      color: #333232;
+      border-radius: 5px;
+      padding: 0 5px;
+      outline: none;
+      margin-left: -5px;
+    }
+  }
+  .icons-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    z-index: 10;
+    margin-top: 2px;
+    .icon {
+      border-radius: 2px;
+      height: 20px;
+      width: 20px;
+      color: #676464;
+    }
+  }
+}
+.MuiDialogContent-root {
+  overflow-y: initial !important;
+}
