@@ -57,11 +57,15 @@ export default function MiniDrawer(props) {
         dispatch(signOut());
       }
     };
-    window.addEventListener("visibilitychange", check);
-    check();
-    return () => {
-      window.removeEventListener("visibilitychange", check);
+    if (process.env.NODE_ENV === "production") {
+      window.addEventListener("visibilitychange", check);
       check();
+    }
+    return () => {
+      if (process.env.NODE_ENV === "production") {
+        window.addEventListener("visibilitychange", check);
+        check();
+      }
     };
   }, [dispatch]);
 
