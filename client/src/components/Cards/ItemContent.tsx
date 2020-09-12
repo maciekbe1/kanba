@@ -9,7 +9,9 @@ import {
   updateItem,
   closeItemContent,
   addAttachment,
-  removeAttachment
+  removeAttachment,
+  setPreviousItem,
+  setNextItem
 } from "store/actions/cardsActions";
 
 import * as CardsService from "services/CardsService";
@@ -22,6 +24,7 @@ import NewContent from "./content-item/NewContent";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 import { isEmpty } from "lodash";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function ItemContent() {
   const isContentOpen = useSelector(
@@ -116,6 +119,16 @@ function ContentView() {
       }
     );
   };
+
+  const getUp = () => {
+    dispatch(setPreviousItem());
+  };
+  const getDown = () => {
+    dispatch(setNextItem());
+  };
+  useHotkeys("shift+up", getUp);
+  useHotkeys("shift+down", getDown);
+
   return (
     <Resizable
       defaultSize={{

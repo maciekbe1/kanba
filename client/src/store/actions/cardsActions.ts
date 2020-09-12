@@ -81,3 +81,11 @@ export const updateItemContent = (payload: any) => ({
   type: "UPDATE_ITEM_CONTENT",
   payload
 });
+
+export const setPreviousItem = () => ({
+  type: "SET_PREVIOUS_ITEM"
+});
+
+export const setNextItem = () => ({
+  type: "SET_NEXT_ITEM"
+});

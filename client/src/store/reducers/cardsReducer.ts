@@ -1,4 +1,4 @@
-import { remove, set } from "lodash";
+import { remove, set, findIndex } from "lodash";
 import Card from "model/Card";
 import ItemHelper from "helper/ItemHelper";
 import * as CardsHelper from "helper/CardsHelper";
@@ -182,6 +182,44 @@ export default (state = INITIAL_DATA, action: any) => {
         ...state,
         cardsState: new Card(state.cardsState).cards,
         itemContentData: Object.assign({}, state.itemContentData, item)
+      };
+    }
+
+    case "SET_NEXT_ITEM": {
+      const itemContentData: any = state.itemContentData;
+      const card = CardsHelper.findCard(
+        itemContentData.cardID,
+        state.cardsState
+      );
+
+      const index = findIndex(card.list, function (o: any) {
+        return o._id === itemContentData._id;
+      });
+      let nextItem;
+      if (index >= 0 && index < card.list.length - 1)
+        nextItem = card.list[index + 1];
+      return {
+        ...state,
+        itemContentData: Object.assign({}, state.itemContentData, nextItem)
+      };
+    }
+
+    case "SET_PREVIOUS_ITEM": {
+      const itemContentData: any = state.itemContentData;
+      const card = CardsHelper.findCard(
+        itemContentData.cardID,
+        state.cardsState
+      );
+
+      const index = findIndex(card.list, function (o: any) {
+        return o._id === itemContentData._id;
+      });
+      let prevItem;
+      if (index > 0 && index < card.list.length)
+        prevItem = card.list[index - 1];
+      return {
+        ...state,
+        itemContentData: Object.assign({}, state.itemContentData, prevItem)
       };
     }
     default:
