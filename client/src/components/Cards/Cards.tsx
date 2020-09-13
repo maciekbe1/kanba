@@ -7,6 +7,7 @@ import * as CardsService from "services/CardsService";
 import { CARDS_PROBLEM_MESSAGE } from "constants/cards";
 import CardsView from "components/Cards/CardsView";
 import { UserTypes, CardsTypes } from "store/types";
+import Spinner from "components/Layouts/Spinner";
 
 interface RootState {
   authReducer: UserTypes;
@@ -25,7 +26,7 @@ export default function Cards(): JSX.Element {
   useEffect(() => {
     fetchCards(dispatch, userID, setCardsLoaded);
   }, [dispatch, userID]);
-  return isCardsLoaded ? <CardsView /> : <div>Loading...</div>;
+  return isCardsLoaded ? <CardsView /> : <Spinner text="Cards loading..." />;
 }
 
 function fetchCards(dispatch: any, userID: string, setCardsLoaded: any) {
