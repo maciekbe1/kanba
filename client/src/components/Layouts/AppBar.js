@@ -17,7 +17,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1
   },
@@ -49,7 +49,7 @@ export default function PublicAppBar(props) {
     left: false
   });
 
-  const toggleDrawer = (side, open) => event => {
+  const toggleDrawer = (side, open) => (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
@@ -59,7 +59,7 @@ export default function PublicAppBar(props) {
 
     setState({ ...state, [side]: open });
   };
-  const sideList = side => (
+  const sideList = (side) => (
     <div
       className={classes.list}
       role="presentation"
@@ -109,10 +109,10 @@ export default function PublicAppBar(props) {
             </Link>
           </Typography>
           <Button color="inherit" href="/signin">
-            Zaloguj
+            Sign in
           </Button>
           <Button variant="outlined" color="inherit" href="/signup">
-            Dołącz
+            Sign up
           </Button>
         </Toolbar>
       </AppBar>

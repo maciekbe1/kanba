@@ -8,7 +8,7 @@ import Box from "@material-ui/core/Box";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1
   },
@@ -50,10 +50,9 @@ export default function Homepage() {
               Kanba
             </Typography>
             <Typography align="center">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt
-              harum sapiente inventore odit maxime quaerat? Provident amet
-              placeat autem sequi voluptatibus, quidem numquam ab cumque neque
-              ut ipsum quis quos?
+              Features that help you grow. Powerful and intuitive features to
+              make your Projects, Marketing, Customer Success teams more
+              productive and effective.
             </Typography>
             <Button
               className={!matches ? classes.button : null}

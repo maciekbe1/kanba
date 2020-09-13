@@ -77,8 +77,8 @@ export default function Signup() {
               autoComplete="off"
               onSubmit={(e) => signUpHandler(e)}
             >
-              <h5>Dołącz do nas</h5>
-              <h1>Utwórz swoje konto</h1>
+              <h5>Join us</h5>
+              <h1>Create your account</h1>
               <Box display="flex" alignItems="center">
                 <Mail color="primary" style={{ marginRight: "10px" }} />
                 <FormControl fullWidth style={{ marginBottom: "20px" }}>
@@ -159,11 +159,11 @@ export default function Signup() {
                 fullWidth
                 className={classes.button}
               >
-                Zarejestruj się
+                Register
               </Button>
             </form>
             <Box my={2}>
-              <Typography align="center">Lub</Typography>
+              <Typography align="center">Or</Typography>
             </Box>
             <Box display="flex" justifyContent="center">
               <GoogleAuth />
@@ -190,9 +190,9 @@ export default function Signup() {
               Account was created.
             </Typography>
             <Typography align="center" variant="subtitle1">
-              Dziękujemy za rejestracje. Wysłaliśmy link weryfikacyjny na twoją
-              skrzynkę pocztową. Kliknij w link by ukończyć proces rejestracji
-              konta.
+              Thank you for your registration. We have sent a verification link
+              to yours mailbox. Click on the link to complete the registration
+              process accounts.
             </Typography>
             <Typography
               align="center"
@@ -200,7 +200,7 @@ export default function Signup() {
               gutterBottom
               className={classes.bold}
             >
-              Po weryfikacji, będziesz mógł zalogować się do aplikacji.
+              After verification, you will be able to log into the application.
             </Typography>
           </Box>
         </Container>
