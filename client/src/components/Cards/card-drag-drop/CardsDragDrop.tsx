@@ -10,7 +10,6 @@ import { cloneDeep, isNull, find, isNil } from "lodash";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setCards,
-  updateCard,
   setSelectedItems,
   updateItemContent
 } from "store/actions/cardsActions";
@@ -118,8 +117,11 @@ export default function DragDropComponent({ onRemove }: Props) {
       result.destination.droppableId === result.source.droppableId
     ) {
       try {
-        CardsService.cardItemChange(result);
-        const newCards = CardsHelper.cardItemChange(newData, result);
+        CardsService.changeItemPositionInsideCard(result);
+        const newCards = CardsHelper.changeItemPositionInsideCard(
+          newData,
+          result
+        );
         dispatch(
           setCards({
             cards: newCards
@@ -133,11 +135,11 @@ export default function DragDropComponent({ onRemove }: Props) {
       result.destination.droppableId !== result.source.droppableId
     ) {
       try {
-        const { start, end, newCards } = CardsHelper.cardItemShared(
+        const { start, end, newCards } = CardsHelper.moveItemToOtherCard(
           cards,
           result
         );
-        CardsService.cardItemShared(start, end, result);
+        CardsService.moveItemToOtherCard(start, end, result);
         dispatch(
           setCards({
             cards: newCards
@@ -163,21 +165,10 @@ export default function DragDropComponent({ onRemove }: Props) {
     } else {
       try {
         const newCards = CardsHelper.cardChange(cards, result);
+        CardsService.updateCardPosition(userID, result);
         dispatch(
           setCards({
             cards: newCards
-          })
-        );
-        dispatch(
-          updateCard({
-            cardID: result.draggableId,
-            position: {
-              userID,
-              source: result.source.index,
-              destination: result.destination.index
-            },
-            type: "all_cards",
-            index: result.source.index
           })
         );
       } catch (error) {

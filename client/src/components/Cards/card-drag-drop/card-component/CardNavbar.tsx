@@ -3,7 +3,7 @@ import Title from "components/Common/Title";
 import CardMenu from "components/Cards/card-drag-drop/card-component/CardMenu";
 import {
   removeCard,
-  updateCard,
+  updateCardProperties,
   closeItemContent,
   cancelNewContent
 } from "store/actions/cardsActions";
@@ -60,18 +60,20 @@ export default function CardNavbar({
   };
 
   const onTitleChange = (title: string) => {
+    CardsService.updateCardProperties(cardID, title, "title");
     dispatch(
-      updateCard({
+      updateCardProperties({
         cardID,
-        title: title,
+        title,
         index
       })
     );
   };
 
   const onToggle = () => {
+    CardsService.updateCardProperties(cardID, !cardExpand, "expand");
     dispatch(
-      updateCard({
+      updateCardProperties({
         cardID,
         expand: !cardExpand,
         index

@@ -39,14 +39,14 @@ export default function CreateCard({ setData, error, message, user }) {
   return (
     <>
       <Typography variant="h4" gutterBottom style={{ textAlign: "center" }}>
-        Utwórz kartę
+        Create the Card
       </Typography>
 
       <TextField
         fullWidth
         required
         error={error}
-        label="Tytuł"
+        label="Title"
         value={values.title}
         onChange={handleChange("title")}
         helperText="* Require"

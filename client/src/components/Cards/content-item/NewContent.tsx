@@ -80,20 +80,16 @@ export default function NewContent() {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("itemID", response._id);
+          formData.append("cardID", response.cardID);
+          formData.append("userID", response.userID);
           array.push(formData);
         });
-
-        if (!isEmpty(itemContentData.attachments))
+        if (!isEmpty(itemContentData.attachments)) {
           axios
             .all(
               array.map(async (file) => {
                 return await CardsService.addFileToItem(file).then((res) => {
-                  dispatch(
-                    addAttachment({
-                      itemID: res.data.itemID,
-                      file: res.data.file
-                    })
-                  );
+                  dispatch(addAttachment(res.data));
                 });
               })
             )
@@ -112,7 +108,7 @@ export default function NewContent() {
                 preventDuplicate: true
               });
             });
-        else {
+        } else {
           setOpen(false);
           onClose();
           dispatch(openItemContent({ itemID: response._id }));
@@ -123,6 +119,7 @@ export default function NewContent() {
         }
       })
       .catch((e: any) => {
+        setOpen(false);
         enqueueSnackbar(e.response.data.message, {
           variant: "error",
           preventDuplicate: true

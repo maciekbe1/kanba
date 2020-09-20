@@ -6,6 +6,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import ClearIcon from "@material-ui/icons/Clear";
 import CheckIcon from "@material-ui/icons/Check";
+import { useSnackbar } from "notistack";
 
 interface Props {
   onDialogAccept: Function;
@@ -15,11 +16,19 @@ interface Props {
 }
 function SimpleModal({ onDialogAccept, setError, activator, children }: Props) {
   const [open, setOpen] = useState(false);
-  const save = () => {
-    onDialogAccept().then((res: boolean) => {
-      setOpen(!res);
-      setError(!res);
-    });
+  const { enqueueSnackbar } = useSnackbar();
+
+  const save = async () => {
+    try {
+      const response = await onDialogAccept();
+      setOpen(!response);
+      setError(!response);
+    } catch (error) {
+      enqueueSnackbar(error.response.data.message, {
+        variant: "error",
+        preventDuplicate: true
+      });
+    }
   };
   const close = () => {
     setError(false);

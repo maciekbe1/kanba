@@ -1,15 +1,11 @@
-import * as CardsService from "services/CardsService";
-
 export const setCards = ({ cards }: { cards: Array<any> }) => ({
   type: "SET_CARDS_STATE",
   cardsState: cards
 });
 
-export const updateCard = (payload: any) => {
-  const name = Object.keys(payload)[1];
-  CardsService.updateCard(payload, payload.cardID, payload.type, name);
+export const updateCardProperties = (payload: any) => {
   return {
-    type: "UPDATE_CARD",
+    type: "UPDATE_CARD_PROPERTIES",
     payload
   };
 };
@@ -34,8 +30,8 @@ export const removeItem = (payload: any) => ({
   payload
 });
 
-export const updateItem = (payload: any) => ({
-  type: "UPDATE_ITEM",
+export const updateItemProperties = (payload: any) => ({
+  type: "UPDATE_ITEM_PROPERTIES",
   payload
 });
 

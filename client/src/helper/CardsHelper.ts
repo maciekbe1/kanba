@@ -1,6 +1,9 @@
 import { find, remove } from "lodash";
 
-export const cardItemChange = (cards: Array<any>, result: any) => {
+export const changeItemPositionInsideCard = (
+  cards: Array<any>,
+  result: any
+) => {
   const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -21,7 +24,7 @@ export const cardItemChange = (cards: Array<any>, result: any) => {
   return cards;
 };
 
-export const cardItemShared = (cards: Array<any>, result: any) => {
+export const moveItemToOtherCard = (cards: Array<any>, result: any) => {
   let start = find(cards, (o) => {
     return o._id === result.source.droppableId;
   });

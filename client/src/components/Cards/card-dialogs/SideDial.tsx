@@ -53,10 +53,7 @@ export default function SideDial({ onRemoveItems }: Props) {
           if (item._id === content?._id) {
             dispatch(closeItemContent());
           }
-          return {
-            itemID: item._id,
-            cardID: item.cardID
-          };
+          return item._id;
         });
         CardsService.removeSelectedItems(selected);
         dispatch(setCards({ cards: newCards }));

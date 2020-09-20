@@ -17,21 +17,31 @@ export const createItem = (cardID: string, item: any) => {
   });
 };
 
-export const updateCard = (
-  card: any,
-  cardID: string,
-  type: string,
-  name: string
-) => {
-  return request(`/api/cards/update-card`, {
-    card: { [name]: card[name] },
-    cardID,
-    type
+export const updateCardPosition = (userID: string, result: any) => {
+  return request(`/api/cards/update-card-position`, {
+    card: {
+      userID,
+      destination: result.destination.index,
+      cardID: result.draggableId
+    },
+    type: "card_change_position"
   });
 };
 
-export const cardItemChange = (result: any) => {
-  return request(`/api/cards/update-card`, {
+export const updateCardProperties = (
+  cardID: string,
+  property: any,
+  name: string
+) => {
+  return request(`/api/cards/update-card-properties`, {
+    name,
+    property,
+    cardID
+  });
+};
+
+export const changeItemPositionInsideCard = (result: any) => {
+  return request(`/api/cards/update-card-position`, {
     card: {
       destination: result.destination.index,
       itemID: result.draggableId,
@@ -40,21 +50,26 @@ export const cardItemChange = (result: any) => {
     type: "inside_list"
   });
 };
-export const updateItem = (itemID: string, key: string, value: any) => {
-  return request(`/api/cards/update-item`, {
+export const updateItemProperties = (
+  itemID: string,
+  name: string,
+  property: any
+) => {
+  return request(`/api/cards/update-item-properties`, {
     itemID,
-    item: { [key]: value }
+    property,
+    name
   });
 };
-export const cardItemShared = (start: any, end: any, result: any) => {
-  return request(`/api/cards/update-card`, {
+export const moveItemToOtherCard = (start: any, end: any, result: any) => {
+  return request(`/api/cards/update-card-position`, {
     card: {
-      start: start._id,
-      end: end._id,
-      destination: result.destination.index,
-      draggableId: result.draggableId
+      oldCardID: start._id,
+      newCardID: end._id,
+      position: result.destination.index,
+      itemID: result.draggableId
     },
-    type: "all_lists"
+    type: "item_change_card"
   });
 };
 

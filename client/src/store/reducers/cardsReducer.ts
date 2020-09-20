@@ -61,7 +61,7 @@ export default (state = INITIAL_DATA, action: any) => {
       };
     }
 
-    case "UPDATE_ITEM": {
+    case "UPDATE_ITEM_PROPERTIES": {
       const name = Object.keys(action.payload)[1];
       const value = Object.values(action.payload)[1];
       const obj = ItemHelper.findItem(action.payload.itemID, state.cardsState);
@@ -72,7 +72,7 @@ export default (state = INITIAL_DATA, action: any) => {
       };
     }
 
-    case "UPDATE_CARD": {
+    case "UPDATE_CARD_PROPERTIES": {
       const name = Object.keys(action.payload)[1];
       const o: any = state.cardsState[action.payload.index];
       o[name] = action.payload[name];
@@ -137,7 +137,7 @@ export default (state = INITIAL_DATA, action: any) => {
           [], //labels
           null, //priority
           null, //status
-          "New Item" //title
+          `new-item-${card.list.length}` //title
         )
       };
     }
@@ -164,8 +164,8 @@ export default (state = INITIAL_DATA, action: any) => {
     case "ADD_ATTACHMENT": {
       const item = ItemHelper.findItem(action.payload.itemID, state.cardsState);
       item.hasOwnProperty("attachments")
-        ? item.attachments.push(action.payload.file)
-        : Object.assign(item, { attachments: [action.payload.file] });
+        ? item.attachments.push(action.payload)
+        : Object.assign(item, { attachments: [action.payload] });
 
       return {
         ...state,

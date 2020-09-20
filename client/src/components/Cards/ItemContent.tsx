@@ -6,7 +6,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { List, ListItemText } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  updateItem,
+  updateItemProperties,
   closeItemContent,
   addAttachment,
   removeAttachment,
@@ -47,9 +47,9 @@ function ContentView() {
   const item = useSelector((state: any) => state.cardsReducer.itemContentData);
 
   const onItemChange = (element: any, type: string) => {
-    CardsService.updateItem(item._id, type, element);
+    CardsService.updateItemProperties(item._id, type, element);
     dispatch(
-      updateItem({
+      updateItemProperties({
         itemID: item._id,
         [type]: element
       })
@@ -61,9 +61,9 @@ function ContentView() {
   };
 
   const onSaveDescription = (editorValue: string) => {
-    CardsService.updateItem(item._id, "description", editorValue);
+    CardsService.updateItemProperties(item._id, "description", editorValue);
     dispatch(
-      updateItem({
+      updateItemProperties({
         itemID: item._id,
         description: editorValue
       })
@@ -82,6 +82,8 @@ function ContentView() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("itemID", item._id);
+      formData.append("cardID", item.cardID);
+      formData.append("userID", item.userID);
       fileArray.push(formData);
     });
     if (!isEmpty(fileArray))
@@ -89,12 +91,7 @@ function ContentView() {
         .all(
           fileArray.map(async (file) => {
             return await CardsService.addFileToItem(file).then((res) => {
-              dispatch(
-                addAttachment({
-                  itemID: res.data.itemID,
-                  file: res.data.file
-                })
-              );
+              dispatch(addAttachment(res.data));
             });
           })
         )
