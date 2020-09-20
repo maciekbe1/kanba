@@ -16,8 +16,17 @@ router.post("/create-card-item", auth, cardsController.createCardItem);
 router.post("/get-user-cards", auth, cardsController.getUserCards);
 router.post("/remove-card", auth, cardsController.removeCard);
 router.post("/remove-card-item", auth, cardsController.removeCardItem);
-router.post("/update-card", auth, cardsController.updateCard);
-router.post("/update-item", auth, cardsController.updateItem);
+router.post("/update-card-position", auth, cardsController.updateCardPosition);
+router.post(
+  "/update-card-properties",
+  auth,
+  cardsController.updateCardProperties
+);
+router.post(
+  "/update-item-properties",
+  auth,
+  cardsController.updateItemProperties
+);
 router.post("/update-many-items", auth, cardsController.updateManyItems);
 router.post("/remove-many-items", auth, cardsController.removeManyItems);
 router.post(
@@ -26,6 +35,5 @@ router.post(
   cardsController.uploadFile
 );
 router.post("/remove-file", auth, cardsController.removeFile);
-router.get("/get-content", auth, cardsController.getContent);
 
 module.exports = router;

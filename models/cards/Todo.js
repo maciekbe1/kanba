@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 import Joi from "joi";
 
 const todoSchema = new mongoose.Schema({
-  user: { type: String, required: true },
-  cards: { type: Array }
+  userID: { type: mongoose.Schema.Types.ObjectId, required: true },
+  cards: [{ type: mongoose.Schema.Types.ObjectId, ref: "Card" }]
 });
 
 const Todo = mongoose.model("Todo", todoSchema);
 
 function validateTodo(todo) {
   const schema = Joi.object({
-    user: Joi.string().required(),
+    userID: Joi.required(),
     cards: Joi.string().required()
   });
   return schema.validate(todo);
