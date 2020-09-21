@@ -9,8 +9,13 @@ export default function Signout({ setAnchorEl }) {
   const dispatch = useDispatch();
   const loginType = useSelector((state) => state.authReducer.byGoogle);
   const logoutHandler = () => {
-    setAnchorEl(null);
-    dispatch(signOut());
+    try {
+      setAnchorEl(null);
+      dispatch(signOut());
+    } catch (error) {
+      setAnchorEl(null);
+      dispatch(signOut());
+    }
   };
   return loginType ? (
     <GoogleLogout

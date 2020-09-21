@@ -98,32 +98,19 @@ exports.getUserCards = async (req, res, next) => {
     const userID = mongoose.Types.ObjectId(req.body.userID);
     const user = await User.findOne({ _id: userID });
     if (!user) return res.status(400).send("User not found");
-    const todos = await Todo.findOne({ userID: userID });
-    let cards = [];
-    if (todos) {
-      await AsyncService.asyncForEach(todos.cards, async (cardID) => {
-        let card = await Card.findById(mongoose.Types.ObjectId(cardID));
-        if (!_.isNil(card)) {
-          let itemPopulated = await Card.findById(cardID)
-            .populate({
-              path: "list",
-              model: Item,
-              populate: {
-                path: "attachments",
-                model: Attachment
-              }
-            })
-            .then((result) => {
-              return result;
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          cards.push(itemPopulated);
+    const todos = await Todo.findOne({ userID }).populate({
+      path: "cards",
+      model: Card,
+      populate: {
+        path: "list",
+        model: Item,
+        populate: {
+          path: "attachments",
+          model: Attachment
         }
-      });
-    }
-    return res.status(200).send(cards);
+      }
+    });
+    return res.status(200).send(todos.cards);
   } catch (error) {
     next(error);
   }
@@ -177,7 +164,7 @@ exports.updateCardPosition = async (req, res, next) => {
     const card = req.body.card;
     const type = req.body.type;
 
-    function cardProperyValidator() {
+    function cardPropertyValidator() {
       if (_.isNil(type)) {
         return res.status(401).send("Operation Type is required.");
       }
@@ -192,8 +179,8 @@ exports.updateCardPosition = async (req, res, next) => {
       }
     }
 
-    if (cardProperyValidator().result) {
-      return res.status(401).send(cardProperyValidator().message);
+    if (cardPropertyValidator().result) {
+      return res.status(401).send(cardPropertyValidator().message);
     }
 
     if (type === "card_change_position") {

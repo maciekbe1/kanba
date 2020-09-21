@@ -39,7 +39,10 @@ exports.googleSignIn = async (req, res, next) => {
     // user ? user : createNewUser(googleUser, res);
     if (user) {
       const token = user.generateAuthToken();
+      const { picture } = googleUser;
+
       res.cookie("token", token, { httpOnly: true, sameSite: true });
+      await User.updateOne({ email: googleUser.email }, { photo: picture });
       res.json({ token });
     } else {
       const { name, email, picture } = googleUser;
