@@ -18,12 +18,13 @@ const Item = mongoose.model("Item", itemSchema);
 function validateItem(item) {
   const schema = Joi.object({
     title: Joi.string().max(128, "utf8").required(),
-    cardID: Joi.string().required(),
+    userID: Joi.required(),
+    cardID: Joi.required(),
     description: Joi.string().max(5000, "utf8").allow("").optional(),
-    status: Joi.object().optional(),
-    priority: Joi.object().optional()
+    status: Joi.object().allow(null).optional(),
+    priority: Joi.object().allow(null).optional()
   });
   return schema.validate(item);
 }
 exports.Item = Item;
-exports.validate = validateItem;
+exports.validateItem = validateItem;

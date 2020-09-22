@@ -15,10 +15,18 @@ const Card = mongoose.model("Card", cardSchema);
 function validateCard(card) {
   const schema = Joi.object({
     userID: Joi.required(),
-    title: Joi.string().max(128, "utf8"),
+    title: Joi.string().max(128, "utf8").required(),
     description: Joi.string().max(5000, "utf8").allow("").optional()
   });
   return schema.validate(card);
 }
+function validateRemoveCard(card) {
+  const schema = Joi.object({
+    userID: Joi.required(),
+    cardID: Joi.required()
+  });
+  return schema.validate(card);
+}
 exports.Card = Card;
-exports.validate = validateCard;
+exports.validateCard = validateCard;
+exports.validateRemoveCard = validateRemoveCard;

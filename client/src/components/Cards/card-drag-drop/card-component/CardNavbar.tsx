@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as CardsService from "services/CardsService";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import { UserTypes } from "store/types";
+import { useSnackbar } from "notistack";
+
 interface RootState {
   authReducer: UserTypes;
 }
@@ -34,6 +36,8 @@ export default function CardNavbar({
   provided
 }: Props) {
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+
   const userID: string = useSelector(
     (state: RootState) => state.authReducer.data._id
   );
@@ -47,14 +51,22 @@ export default function CardNavbar({
       dialogTitle: "Are you sure you want to delete this card?",
       dialogText: cardTitle,
       remove: () => {
-        CardsService.removeCard(cardID, userID);
-        if (item?.cardID === cardID) {
-          dispatch(closeItemContent());
-        }
-        if (isNewContentOpen) {
-          dispatch(cancelNewContent());
-        }
-        dispatch(removeCard({ cardID }));
+        CardsService.removeCard(cardID, userID)
+          .then(() => {
+            if (item?.cardID === cardID) {
+              dispatch(closeItemContent());
+            }
+            if (isNewContentOpen) {
+              dispatch(cancelNewContent());
+            }
+            dispatch(removeCard({ cardID }));
+          })
+          .catch((error) => {
+            enqueueSnackbar(error.response.data.message, {
+              variant: "error",
+              preventDuplicate: true
+            });
+          });
       }
     });
   };

@@ -1,7 +1,7 @@
-import { Card, validate } from "../models/cards/Card";
+import { Card, validateCard, validateRemoveCard } from "../models/cards/Card";
 import { User } from "../models/User";
 import { Todo } from "../models/cards/Todo";
-import { Item } from "../models/cards/Item";
+import { Item, validateItem } from "../models/cards/Item";
 import { Attachment } from "../models/Attachment";
 
 import mongoose from "mongoose";
@@ -19,9 +19,9 @@ const bucket = storage.bucket("kanba-cards");
 
 exports.createCard = async (req, res, next) => {
   try {
-    // const { error } = validate(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-    const userID = mongoose.Types.ObjectId(req.body.user);
+    const { error } = validateCard(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    const userID = mongoose.Types.ObjectId(req.body.userID);
     const cardsArray = await Todo.findOne({ userID: userID });
     if (cardsArray?.cards?.length >= 100)
       return res.status(405).send("card quantity exceeded");
@@ -50,28 +50,32 @@ exports.createCard = async (req, res, next) => {
 };
 exports.createCardItem = async (req, res, next) => {
   try {
-    const cardID = req.body.cardID;
-    const newItem = req.body.item;
+    const { cardID, description, priority, status, title, userID } = req.body;
+
+    const { error } = validateItem(req.body);
+    if (error)
+      return res.status(400).send({ message: error.details[0].message });
+
     const card = await Card.findById(cardID);
     const quantity = card.list.length;
 
     if (_.isNil(card)) {
       return res.status(400).send("Card not found");
     }
-    if (_.isEmpty(newItem.title)) {
+    if (_.isEmpty(title)) {
       return res.status(405).send("Title can't be empty");
     }
     if (quantity > 1000) return res.status(405).send("Item quantity exceeded");
 
     let item = new Item({
-      title: newItem.title,
-      description: newItem.description,
+      title,
+      description: description,
       cardID: mongoose.Types.ObjectId(cardID),
-      status: newItem.status,
-      priority: newItem.priority,
+      status: status,
+      priority: priority,
       labels: [],
       attachments: [],
-      userID: card.userID
+      userID: mongoose.Types.ObjectId(userID)
     });
     item = await item.save();
 
@@ -110,6 +114,9 @@ exports.getUserCards = async (req, res, next) => {
         }
       }
     });
+    if (_.isNull(todos)) {
+      res.status(200).send([]);
+    }
     return res.status(200).send(todos.cards);
   } catch (error) {
     next(error);
@@ -118,9 +125,13 @@ exports.getUserCards = async (req, res, next) => {
 
 exports.removeCard = async (req, res, next) => {
   try {
+    const { error } = validateRemoveCard(req.body);
+    if (error)
+      return res.status(400).send({ message: error.details[0].message });
+
     const cardID = mongoose.Types.ObjectId(req.body.cardID);
-    const card = await Card.findById(cardID);
     const userID = mongoose.Types.ObjectId(req.body.userID);
+    const card = await Card.findById(cardID);
     if (_.isEmpty(card)) {
       return res.status(400).send("Card doesn't exist");
     } else {
@@ -337,9 +348,16 @@ exports.uploadFile = async (req, res, next) => {
     const cardID = req.body.cardID;
     const id = mongoose.Types.ObjectId();
     const ext = path.extname(file.originalname);
-
+    const attachmentsLength = await Attachment.find({
+      itemID
+    }).countDocuments();
+    if (attachmentsLength > 9) {
+      return res
+        .status(400)
+        .send({ message: "Maximum attachment stack is 10" });
+    }
     if (!file || Object.keys(file).length === 0) {
-      return res.status(400).send("No files were uploaded.");
+      return res.status(400).send({ message: "No files were uploaded." });
     }
 
     const originalname = file.originalname;

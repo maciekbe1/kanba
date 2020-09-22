@@ -10,10 +10,9 @@ export const createCard = (data: any) => {
   return request(`/api/cards/create-card`, data);
 };
 
-export const createItem = (cardID: string, item: any) => {
+export const createItem = (itemProperties: any) => {
   return request(`/api/cards/create-card-item`, {
-    cardID,
-    item
+    ...itemProperties
   });
 };
 

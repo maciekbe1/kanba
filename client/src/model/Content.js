@@ -1,5 +1,6 @@
 export default class Content {
   constructor(
+    userID,
     attachments,
     cardID,
     cardTitle,
@@ -10,6 +11,7 @@ export default class Content {
     status,
     title
   ) {
+    this.userID = userID;
     this.attachments = attachments;
     this.cardID = cardID;
     this.cardTitle = cardTitle;

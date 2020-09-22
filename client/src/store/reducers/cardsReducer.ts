@@ -129,6 +129,7 @@ export default (state = INITIAL_DATA, action: any) => {
         isNewContentOpen: true,
         isContentOpen: false,
         itemContentData: new Content(
+          card.userID,
           [], //attachments
           action.cardID,
           card.title,
@@ -163,9 +164,9 @@ export default (state = INITIAL_DATA, action: any) => {
 
     case "ADD_ATTACHMENT": {
       const item = ItemHelper.findItem(action.payload.itemID, state.cardsState);
-      item.hasOwnProperty("attachments")
-        ? item.attachments.push(action.payload)
-        : Object.assign(item, { attachments: [action.payload] });
+      Object.assign(item, {
+        attachments: [...item.attachments, ...action.payload.files]
+      });
 
       return {
         ...state,

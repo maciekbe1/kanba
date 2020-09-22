@@ -33,7 +33,7 @@ export default function CreateCard({ setData, error, message, user }) {
     setData({
       title: values.title,
       description: values.description,
-      user
+      userID: user
     });
   }, [values, user, setData]);
   return (

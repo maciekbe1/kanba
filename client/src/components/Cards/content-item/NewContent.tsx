@@ -8,8 +8,6 @@ import {
   openItemContent
 } from "store/actions/cardsActions";
 
-import axios from "axios";
-
 import { Resizable } from "re-resizable";
 
 import Card from "@material-ui/core/Card";
@@ -65,66 +63,56 @@ export default function NewContent() {
 
   const createCardItem = async () => {
     setOpen(true);
-    let response: any;
-    return await CardsService.createItem(
-      itemContentData.cardID,
-      itemContentData
-    )
-      .then((responseItem: any) => {
-        dispatch(createItem(responseItem.data.item));
-        response = responseItem.data.item;
-      })
-      .then(() => {
-        let array: Array<any> = [];
-        itemContentData.attachments.forEach((file: any) => {
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("itemID", response._id);
-          formData.append("cardID", response.cardID);
-          formData.append("userID", response.userID);
-          array.push(formData);
-        });
+    try {
+      const { description, priority, status, title, userID } = itemContentData;
+      const responseItem = await CardsService.createItem({
+        cardID: itemContentData.cardID,
+        description,
+        priority,
+        status,
+        title,
+        userID
+      });
+      dispatch(createItem(responseItem.data.item));
+      try {
         if (!isEmpty(itemContentData.attachments)) {
-          axios
-            .all(
-              array.map(async (file) => {
-                return await CardsService.addFileToItem(file).then((res) => {
-                  dispatch(addAttachment(res.data));
-                });
-              })
-            )
-            .then(() => {
-              setOpen(false);
-              onClose();
-              dispatch(openItemContent({ itemID: response._id }));
-              enqueueSnackbar("Item successfully created", {
-                variant: "success",
-                preventDuplicate: true
-              });
-            })
-            .catch((e) => {
-              enqueueSnackbar(e.response.data.message, {
-                variant: "error",
-                preventDuplicate: true
-              });
-            });
-        } else {
-          setOpen(false);
-          onClose();
-          dispatch(openItemContent({ itemID: response._id }));
-          enqueueSnackbar("Item successfully created", {
-            variant: "success",
-            preventDuplicate: true
+          let arrayOfFiles: Array<any> = [];
+          itemContentData.attachments.forEach((file: any) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("itemID", responseItem.data.item._id);
+            formData.append("cardID", responseItem.data.item.cardID);
+            formData.append("userID", responseItem.data.item.userID);
+            arrayOfFiles.push(formData);
           });
+          const filesMap = arrayOfFiles.map(async (file) => {
+            return await CardsService.addFileToItem(file);
+          });
+          let responseFiles: Array<any> = await Promise.all(filesMap);
+          dispatch(
+            addAttachment({
+              itemID: responseItem.data.item._id,
+              files: responseFiles.map((file) => file.data)
+            })
+          );
         }
-      })
-      .catch((e: any) => {
+      } catch (error) {
         setOpen(false);
-        enqueueSnackbar(e.response.data.message, {
+        enqueueSnackbar(error.response.data.message, {
           variant: "error",
           preventDuplicate: true
         });
+      }
+      setOpen(false);
+      onClose();
+      dispatch(openItemContent({ itemID: responseItem.data.item._id }));
+    } catch (error) {
+      setOpen(false);
+      enqueueSnackbar(error.response.data.message, {
+        variant: "error",
+        preventDuplicate: true
       });
+    }
   };
 
   const onPostAttachments = (acceptedFiles: Array<any>, error: Array<any>) => {

@@ -10,6 +10,7 @@ import ItemFile from "components/Cards/content-item/ItemFile";
 
 import AttachmentHelper from "helper/AttachmentHelper";
 import { useSnackbar } from "notistack";
+import { isArray } from "lodash";
 
 interface Props {
   onRemoveAttachment: Function;
@@ -38,6 +39,7 @@ export default function Attachments({
     noKeyboard: true,
     multiple: true,
     maxSize: 15728640,
+    maxFiles: 10,
     onDrop: (acceptedFiles, error) => {
       const attachment = AttachmentHelper.attachmentURLCreator(acceptedFiles);
       if (isNew) {
@@ -52,7 +54,7 @@ export default function Attachments({
     try {
       onRemoveAttachment(index);
     } catch (error) {
-      enqueueSnackbar(error, {
+      enqueueSnackbar(error.message, {
         variant: "error",
         preventDuplicate: true
       });
@@ -78,7 +80,7 @@ export default function Attachments({
           </div>
         ))}
       </div>
-      {attachments?.length && dialogIsOpen ? (
+      {isArray(attachments) && dialogIsOpen ? (
         <AttachmentDialog
           isOpen={dialogIsOpen}
           setDialogIsOpen={setDialogIsOpen}

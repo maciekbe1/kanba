@@ -11,9 +11,9 @@ const Todo = mongoose.model("Todo", todoSchema);
 function validateTodo(todo) {
   const schema = Joi.object({
     userID: Joi.required(),
-    cards: Joi.string().required()
+    cards: Joi.required()
   });
   return schema.validate(todo);
 }
 exports.Todo = Todo;
-exports.validate = validateTodo;
+exports.validateTodo = validateTodo;

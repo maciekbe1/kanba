@@ -16,6 +16,7 @@ import {
 } from "store/actions/cardsActions";
 import CreateCard from "components/Cards/card-dialogs/CreateCardDialog";
 import { UserTypes, CardsTypes } from "store/types";
+import { useSnackbar } from "notistack";
 
 interface RootState {
   authReducer: UserTypes;
@@ -28,6 +29,8 @@ interface Props {
 export default function SideDial({ onRemoveItems }: Props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+
   const cards = useSelector(
     (state: RootState) => state.cardsReducer.cardsState
   );
@@ -55,9 +58,16 @@ export default function SideDial({ onRemoveItems }: Props) {
           }
           return item._id;
         });
-        CardsService.removeSelectedItems(selected);
-        dispatch(setCards({ cards: newCards }));
-        dispatch(setSelectedItems([]));
+        try {
+          CardsService.removeSelectedItems(selected);
+          dispatch(setCards({ cards: newCards }));
+          dispatch(setSelectedItems([]));
+        } catch (error) {
+          enqueueSnackbar(error.response.data.message, {
+            variant: "error",
+            preventDuplicate: true
+          });
+        }
       },
       dialogTitle: "do you want to delete the items below?",
       dialogText: selectedItems.map((item, index) => (
