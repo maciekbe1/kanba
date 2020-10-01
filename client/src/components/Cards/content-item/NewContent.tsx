@@ -11,7 +11,7 @@ import {
 import { Resizable } from "re-resizable";
 
 import Card from "@material-ui/core/Card";
-import { List, ListItemText, Button } from "@material-ui/core";
+import { List, ListItemText } from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -53,18 +53,13 @@ export default function NewContent() {
     );
   };
 
-  const onSaveDescription = (editorValue: any) => {
-    dispatch(
-      updateItemContent({
-        description: editorValue
-      })
-    );
-  };
-
-  const createCardItem = async () => {
+  const createCardItem = async (description: string) => {
     setOpen(true);
+    updateItemContent({
+      description: description
+    });
     try {
-      const { description, priority, status, title, userID } = itemContentData;
+      const { priority, status, title, userID } = itemContentData;
       const responseItem = await CardsService.createItem({
         cardID: itemContentData.cardID,
         description,
@@ -170,10 +165,10 @@ export default function NewContent() {
               secondary={itemContentData.cardTitle}
             />
           </List>
-          <div className="item-content-action">
+          {/* <div className="item-content-action">
             <Button onClick={createCardItem}>save</Button>
             <Button onClick={onClose}>Cancel</Button>
-          </div>
+          </div> */}
         </div>
         <div className="flex space-between">
           <Attachments
@@ -193,7 +188,9 @@ export default function NewContent() {
         </div>
         <Description
           description={itemContentData.description}
-          onSaveDescription={onSaveDescription}
+          isNew={true}
+          createCardItem={createCardItem}
+          onClose={onClose}
         />
       </Card>
       <Backdrop open={open} className={classes.backdrop}>

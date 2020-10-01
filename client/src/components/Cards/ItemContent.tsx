@@ -186,8 +186,9 @@ function ContentView() {
           />
         </div>
         <Description
-          description={item.description}
           onSaveDescription={onSaveDescription}
+          isNew={false}
+          description={item.description}
         />
       </Card>
     </Resizable>

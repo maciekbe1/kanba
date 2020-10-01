@@ -5,11 +5,20 @@ import EditorButtons from "components/Editor/EditorButtons";
 import parse from "react-html-parser";
 
 interface Props {
-  description: any;
-  onSaveDescription: Function;
+  onSaveDescription?: Function;
+  createCardItem?: Function;
+  onClose?: Function;
+  isNew: boolean;
+  description: string;
 }
 
-export default function Description({ description, onSaveDescription }: Props) {
+export default function Description({
+  onSaveDescription,
+  description,
+  isNew,
+  createCardItem,
+  onClose
+}: Props) {
   const [edit, setEdit] = useState(false);
   const [editorValue, setEditorValue] = useState("");
   const [memoValue, setMemoValue] = useState("");
@@ -25,7 +34,7 @@ export default function Description({ description, onSaveDescription }: Props) {
     if (editorValue !== memoValue) {
       setMemoValue(editorValue);
     }
-    onSaveDescription(editorValue);
+    if (onSaveDescription) onSaveDescription(editorValue);
   };
 
   const onCancel = () => {
@@ -42,14 +51,19 @@ export default function Description({ description, onSaveDescription }: Props) {
   return (
     <div className="card-description">
       <p className="card-description-title">Description</p>
-      {edit ? (
+      {edit || isNew ? (
         <>
           <Editor
             editorValue={editorValue ? editorValue : ""}
             setEditorValue={setEditorValue}
             isEdit={edit}
           />
-          <EditorButtons onSave={save} onCancel={onCancel} />
+          <EditorButtons
+            onSave={
+              isNew && createCardItem ? () => createCardItem(editorValue) : save
+            }
+            onCancel={isNew ? onClose : onCancel}
+          />
         </>
       ) : (
         <div

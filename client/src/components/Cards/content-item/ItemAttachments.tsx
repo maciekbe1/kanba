@@ -38,7 +38,7 @@ export default function Attachments({
     noClick: true,
     noKeyboard: true,
     multiple: true,
-    maxSize: 15728640,
+    maxSize: 15 * 1024 * 1024,
     maxFiles: 10,
     onDrop: (acceptedFiles, error) => {
       const attachment = AttachmentHelper.attachmentURLCreator(acceptedFiles);

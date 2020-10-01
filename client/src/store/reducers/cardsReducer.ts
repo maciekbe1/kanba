@@ -138,7 +138,7 @@ export default (state = INITIAL_DATA, action: any) => {
           [], //labels
           null, //priority
           null, //status
-          `new-item-${card.list.length}` //title
+          `new item ${card.list.length}` //title
         )
       };
     }
