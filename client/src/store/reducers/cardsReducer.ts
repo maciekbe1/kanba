@@ -3,15 +3,15 @@ import Card from "model/Card";
 import ItemHelper from "helper/ItemHelper";
 import * as CardsHelper from "helper/CardsHelper";
 import Content from "model/Content";
+import * as CardsService from "services/CardsService";
 
-const INITIAL_DATA = {
+const INITIAL_DATA: any = {
   isCardsLoaded: false,
   selectedItems: [],
   cardsState: [],
   isContentOpen: false,
   isNewContentOpen: false,
-  itemContentData: {},
-  openItemCardName: null
+  itemContentData: {}
 };
 
 export default (state = INITIAL_DATA, action: any) => {
@@ -74,13 +74,28 @@ export default (state = INITIAL_DATA, action: any) => {
 
     case "UPDATE_CARD_PROPERTIES": {
       const name = Object.keys(action.payload)[1];
-      const o: any = state.cardsState[action.payload.index];
+      const o: any = CardsHelper.findCard(
+        action.payload.cardID,
+        state.cardsState
+      );
       o[name] = action.payload[name];
+      if (state.itemContentData) {
+        if (state.itemContentData.cardID === action.payload.cardID) {
+          const itemContent = {
+            ...state.itemContentData,
+            cardTitle: action.payload.title
+          };
+          return {
+            ...state,
+            cardsState: new Card(state.cardsState).cards,
+            itemContentData: itemContent
+          };
+        }
+      }
 
       return {
         ...state,
-        cardsState: new Card(state.cardsState).cards,
-        openItemCardName: action.payload.title
+        cardsState: new Card(state.cardsState).cards
       };
     }
 
@@ -138,7 +153,7 @@ export default (state = INITIAL_DATA, action: any) => {
           [], //labels
           null, //priority
           null, //status
-          `new item ${card.list.length}` //title
+          "" //title
         )
       };
     }
@@ -221,6 +236,35 @@ export default (state = INITIAL_DATA, action: any) => {
       return {
         ...state,
         itemContentData: Object.assign({}, state.itemContentData, prevItem)
+      };
+    }
+
+    case "REMOVE_ITEMS": {
+      const newCardsState = CardsHelper.removeSelectedItems(
+        state.cardsState,
+        state.selectedItems
+      );
+      CardsService.removeSelectedItems(state.selectedItems);
+      if (state.itemContentData._id) {
+        const item = ItemHelper.findItem(
+          state.itemContentData._id,
+          state.selectedItems
+        );
+        if (item) {
+          return {
+            ...state,
+            itemContentData: {},
+            isContentOpen: false,
+            cardsState: newCardsState,
+            selectedItems: []
+          };
+        }
+      }
+
+      return {
+        ...state,
+        cardsState: newCardsState,
+        selectedItems: []
       };
     }
     default:

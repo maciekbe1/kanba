@@ -16,11 +16,13 @@ export default function ItemFile({ file, onRemoveFromView, index }: Props) {
 
   return (
     <div className="attachment-file" {...eventHandlers}>
-      {file.type.includes("image") ? (
-        <img src={file.content} alt="" />
-      ) : (
-        <InsertDriveFileIcon fontSize="large" />
-      )}
+      {file ? (
+        file.type.includes("image") ? (
+          <img src={file.content} alt="" />
+        ) : (
+          <InsertDriveFileIcon fontSize="large" />
+        )
+      ) : null}
       {hovered ? (
         <FileInfo
           file={file}

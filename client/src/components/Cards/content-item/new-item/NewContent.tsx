@@ -17,9 +17,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 import * as CardsService from "services/CardsService";
 
-import Title from "components/Common/Title";
+import NewItemTitle from "components/Cards/content-item/new-item/NewItemTitle";
 import Description from "components/Cards/content-item/ItemDescription";
-import Attachments from "components/Cards/content-item/ItemAttachments";
 import ItemSiteBar from "components/Cards/content-item/ItemSideBar";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { useSnackbar } from "notistack";
@@ -110,30 +109,30 @@ export default function NewContent() {
     }
   };
 
-  const onPostAttachments = (acceptedFiles: Array<any>, error: Array<any>) => {
-    if (!isEmpty(error)) {
-      enqueueSnackbar(error[0].errors[0].message, {
-        variant: "error",
-        preventDuplicate: true
-      });
-    }
-    dispatch(
-      updateItemContent({
-        attachments: acceptedFiles
-      })
-    );
-  };
+  // const onPostAttachments = (acceptedFiles: Array<any>, error: Array<any>) => {
+  //   if (!isEmpty(error)) {
+  //     enqueueSnackbar(error[0].errors[0].message, {
+  //       variant: "error",
+  //       preventDuplicate: true
+  //     });
+  //   }
+  //   dispatch(
+  //     updateItemContent({
+  //       attachments: acceptedFiles
+  //     })
+  //   );
+  // };
 
-  const onRemoveAttachment = (index: number) => {
-    const newAttachments = itemContentData.attachments.filter(
-      (item: any, i: number) => index !== i
-    );
-    dispatch(
-      updateItemContent({
-        attachments: newAttachments
-      })
-    );
-  };
+  // const onRemoveAttachment = (index: number) => {
+  //   const newAttachments = itemContentData.attachments.filter(
+  //     (item: any, i: number) => index !== i
+  //   );
+  //   dispatch(
+  //     updateItemContent({
+  //       attachments: newAttachments
+  //     })
+  //   );
+  // };
 
   return (
     <Resizable
@@ -152,31 +151,21 @@ export default function NewContent() {
       }}
     >
       <Card className="item-content-card">
-        <div className="item-content-title">
-          <List>
+        <div className="item-content-header flex w-100 space-between">
+          <List className="w-100">
             <ListItemText
-              primary={
-                <Title
-                  title={itemContentData.title}
-                  onTitleChange={onItemChange}
-                  isDefaultEdit={true}
-                />
-              }
+              primary={<NewItemTitle />}
               secondary={itemContentData.cardTitle}
             />
           </List>
-          {/* <div className="item-content-action">
-            <Button onClick={createCardItem}>save</Button>
-            <Button onClick={onClose}>Cancel</Button>
-          </div> */}
         </div>
-        <div className="flex space-between">
-          <Attachments
+        <div className="flex justify-end">
+          {/* <Attachments
             attachments={itemContentData.attachments}
             onPostAttachments={onPostAttachments}
             onRemoveAttachment={onRemoveAttachment}
             isNew={true}
-          />
+          /> */}
 
           <ItemSiteBar
             date={itemContentData.date}

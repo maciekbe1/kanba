@@ -1,24 +1,23 @@
 @import "./content-item/content-item";
+@import "./title-component";
 
 .card-component {
   .MuiCardContent-root:last-child {
     padding-bottom: 16px;
   }
   // overflow: initial !important;
+  .title-component {
+    margin-right: 10px;
+    input {
+      font-weight: bold;
+    }
+  }
   .card-navbar-component {
-    width: 100%;
     display: flex;
     justify-content: space-between;
     .card-component-navbar-actions {
       display: flex;
       align-items: center;
-    }
-    .title-component {
-      margin-bottom: 5px;
-      .title {
-        font-weight: bold;
-        font-size: 2em;
-      }
     }
   }
   .card-item {
@@ -26,6 +25,11 @@
     background: inherit;
     border: 1px solid rgb(204, 204, 204);
     transition: margin 0.15s ease-in-out 0s;
+    .launch-item-button {
+      display: flex;
+      margin-right: 10px;
+      align-items: center;
+    }
     .card-item-container {
       cursor: pointer;
       .item-title-text {
@@ -39,7 +43,7 @@
       }
       .item-info-container {
         display: flex;
-        margin-right: 10px;
+
         .item-icon {
           color: #fff;
           width: 24px;

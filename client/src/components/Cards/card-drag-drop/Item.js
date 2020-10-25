@@ -4,9 +4,10 @@ import { Draggable } from "react-beautiful-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { openItemContent } from "store/actions/cardsActions";
 
-import DragHandleIcon from "@material-ui/icons/DragHandle";
+import LaunchIcon from "@material-ui/icons/Launch";
 import ItemCheckbox from "components/Cards/card-drag-drop/item-component/ItemCheckbox";
 import ItemInfo from "components/Cards/card-drag-drop/item-component/ItemInfo";
+import IconButton from "@material-ui/core/IconButton";
 
 const selectedItemSelector = (contentID, itemID) => {
   return contentID?._id === itemID;
@@ -18,13 +19,8 @@ export default function DndItem({ item, index }) {
   const dispatch = useDispatch();
   const openItem = useCallback(
     (e) => {
-      if (
-        e.target.classList.contains("card-item-container") ||
-        e.target.classList.contains("item-title-text") ||
-        e.target.classList.contains("card-item-action")
-      ) {
-        dispatch(openItemContent({ itemID: item._id }));
-      }
+      e.stopPropagation();
+      dispatch(openItemContent({ itemID: item._id }));
     },
     [item._id, dispatch]
   );
@@ -44,16 +40,12 @@ export default function DndItem({ item, index }) {
           ref={provided.innerRef}
           style={getItemStyle(provided, snapshot)}
           className={selected ? "card-item card-item-selected" : "card-item"}
-          onClick={openItem}
         >
-          <div className="flex align-center space-between card-item-container">
+          <div
+            className="flex align-center space-between card-item-container"
+            {...provided.dragHandleProps}
+          >
             <div className="flex align-center card-item-action">
-              <div
-                {...provided.dragHandleProps}
-                style={{ display: "flex", marginLeft: "5px" }}
-              >
-                <DragHandleIcon />
-              </div>
               <ItemCheckbox item={item} />
               <span className="item-title-text">{item.title}</span>
             </div>
@@ -61,6 +53,13 @@ export default function DndItem({ item, index }) {
               <div className="card-item-icons">
                 <ItemInfo status={item.status} priority={item.priority} />
               </div>
+              <IconButton
+                className="launch-item-button"
+                onClick={openItem}
+                size="small"
+              >
+                <LaunchIcon />
+              </IconButton>
             </div>
           </div>
         </div>

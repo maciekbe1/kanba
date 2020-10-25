@@ -1,6 +1,9 @@
 import { request, sendFile } from "api/API";
+import store from "store/store";
 
-export const getCards = (userID: string) => {
+export const getCards = async () => {
+  const state: any = store.getState();
+  const userID: any = state.authReducer.data._id;
   return request(`/api/cards/get-user-cards`, {
     userID
   });
@@ -16,7 +19,9 @@ export const createItem = (itemProperties: any) => {
   });
 };
 
-export const updateCardPosition = (userID: string, result: any) => {
+export const updateCardPosition = (result: any) => {
+  const state: any = store.getState();
+  const userID: any = state.authReducer.data._id;
   return request(`/api/cards/update-card-position`, {
     card: {
       userID,
@@ -51,8 +56,8 @@ export const changeItemPositionInsideCard = (result: any) => {
 };
 export const updateItemProperties = (
   itemID: string,
-  name: string,
-  property: any
+  property: any,
+  name: string
 ) => {
   return request(`/api/cards/update-item-properties`, {
     itemID,
@@ -95,7 +100,9 @@ export const removeSelectedItems = (selected: Array<any>) => {
   return request(`/api/cards/remove-many-items`, { selected });
 };
 
-export const removeCard = (cardID: string, userID: string) => {
+export const removeCard = (cardID: string) => {
+  const state: any = store.getState();
+  const userID: any = state.authReducer.data._id;
   return request(`/api/cards/remove-card`, {
     cardID,
     userID

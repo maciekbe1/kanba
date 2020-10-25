@@ -1,6 +1,9 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { openNewContent } from "store/actions/cardsActions";
+import { updateCardProperties, removeCard } from "store/actions/cardsActions";
+
+import * as CardsService from "services/CardsService";
 
 import Badge from "@material-ui/core/Badge";
 import IconButton from "@material-ui/core/IconButton";
@@ -16,33 +19,39 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 interface Props {
   expand: boolean;
   listLength: number;
-  onRemoveCard: any;
-  onToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
   cardID: string;
+  index: number;
 }
 
-export default function Actions({
-  expand,
-  listLength,
-  onRemoveCard,
-  onToggle,
-  cardID
-}: Props) {
+export default function Actions({ expand, listLength, cardID, index }: Props) {
   const dispatch = useDispatch();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const isMenuOpen = Boolean(menuAnchor);
 
   const openMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    setMenuAnchor(event.currentTarget);
   };
-
+  const onToggle = () => {
+    CardsService.updateCardProperties(cardID, !expand, "expand");
+    dispatch(
+      updateCardProperties({
+        cardID,
+        expand: !expand
+      })
+    );
+  };
   const closeMenu = () => {
-    setAnchorEl(null);
+    setMenuAnchor(null);
   };
 
-  const removeCard = () => {
-    onRemoveCard();
+  const removeCardHandler = () => {
     closeMenu();
+    try {
+      CardsService.removeCard(cardID);
+      dispatch(removeCard({ cardID }));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const createNewContent = () => {
@@ -78,8 +87,8 @@ export default function Actions({
       </IconButton>
       <Menu
         id="card-menu"
-        anchorEl={anchorEl}
-        open={open}
+        anchorEl={menuAnchor}
+        open={isMenuOpen}
         onClose={closeMenu}
         getContentAnchorEl={null}
         anchorOrigin={{
@@ -97,7 +106,7 @@ export default function Actions({
           </ListItemIcon>
           <ListItemText primary="Add Item" />
         </MenuItem>
-        <MenuItem onClick={removeCard}>
+        <MenuItem onClick={removeCardHandler}>
           <ListItemIcon>
             <DeleteIcon />
           </ListItemIcon>
