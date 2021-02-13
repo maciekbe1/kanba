@@ -85,3 +85,7 @@ export const setPreviousItem = () => ({
 export const setNextItem = () => ({
   type: "SET_NEXT_ITEM"
 });
+
+export const removeItems = () => ({
+  type: "REMOVE_ITEMS"
+});

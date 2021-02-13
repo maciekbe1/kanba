@@ -19,7 +19,6 @@ import Lock from "@material-ui/icons/Lock";
 import Mail from "@material-ui/icons/Mail";
 import Grid from "@material-ui/core/Grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import GoogleAuth from "components/Auth/GoogleAuth";
 import { signIn } from "store/actions/UserActions";
 import { useDispatch } from "react-redux";
 
@@ -163,12 +162,6 @@ function Signin() {
               </Button>
             </Box>
           </form>
-          <Box my={2}>
-            <Typography align="center">Or</Typography>
-          </Box>
-          <Box display="flex" justifyContent="center">
-            <GoogleAuth />
-          </Box>
         </Grid>
       </Grid>
     </Container>

@@ -9,7 +9,7 @@ import taskRouter from "./routes/taskRouter";
 import userRouter from "./routes/userRouter";
 import authRouter from "./routes/authRouter";
 import cardsRouter from "./routes/cardsRouter";
-
+// import cors from "cors";
 import error from "./middleware/error";
 const path = require("path");
 
@@ -35,7 +35,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cookieParser(), jsonParser, urlencodedParser, morgan("tiny"));
+app.use(
+  cookieParser(),
+  jsonParser,
+  urlencodedParser,
+  morgan("tiny")
+  // cors("*")
+);
 
 app.use("/api/projects", projectRouter);
 app.use("/api/tasks", taskRouter);
@@ -58,7 +64,7 @@ const connectDb = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
-      useFindAndModify: false
+      useFindAndModify: false,
     },
     () => {
       console.log("DB connected");

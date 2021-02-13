@@ -1,80 +1,28 @@
 import React, { useState } from "react";
 import SpeedDial from "@material-ui/lab/SpeedDial";
 import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 import * as CardsService from "services/CardsService";
-import * as CardsHelper from "helper/CardsHelper";
-import { Typography } from "@material-ui/core";
+
 import SimpleModal from "components/Utils/Modal";
-import {
-  setCards,
-  setSelectedItems,
-  createCard,
-  closeItemContent
-} from "store/actions/cardsActions";
+import { createCard } from "store/actions/cardsActions";
 import CreateCard from "components/Cards/card-dialogs/CreateCardDialog";
 import { UserTypes, CardsTypes } from "store/types";
-import { useSnackbar } from "notistack";
 
 interface RootState {
   authReducer: UserTypes;
   cardsReducer: CardsTypes;
 }
-interface Props {
-  onRemoveItems: any;
-}
 
-export default function SideDial({ onRemoveItems }: Props) {
+export default function SideDial() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const cards = useSelector(
-    (state: RootState) => state.cardsReducer.cardsState
-  );
   const userID = useSelector((state: RootState) => state.authReducer.data._id);
-  const content = useSelector(
-    (state: RootState) => state.cardsReducer.itemContentData
-  );
 
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const [data, setData] = useState();
-
-  const selectedItems = useSelector(
-    (state: RootState) => state.cardsReducer.selectedItems
-  );
-
-  const icon: JSX.Element = <DeleteForeverIcon />;
-  const removeAction = () => {
-    onRemoveItems({
-      remove: () => {
-        const newCards = CardsHelper.removeSelectedItems(cards, selectedItems);
-        const selected = selectedItems.map((item) => {
-          if (item._id === content?._id) {
-            dispatch(closeItemContent());
-          }
-          return item._id;
-        });
-        try {
-          CardsService.removeSelectedItems(selected);
-          dispatch(setCards({ cards: newCards }));
-          dispatch(setSelectedItems([]));
-        } catch (error) {
-          enqueueSnackbar(error.response.data.message, {
-            variant: "error",
-            preventDuplicate: true
-          });
-        }
-      },
-      dialogTitle: "do you want to delete the items below?",
-      dialogText: selectedItems.map((item, index) => (
-        <Typography key={index}>{item.title}</Typography>
-      ))
-    });
-  };
 
   const createCardHandle = async () => {
     return await CardsService.createCard(data)
@@ -90,37 +38,26 @@ export default function SideDial({ onRemoveItems }: Props) {
   };
   return (
     <div className={classes.dialWrapper}>
-      {!selectedItems.length ? (
-        <SimpleModal
-          onDialogAccept={createCardHandle}
-          setError={setError}
-          activator={({ setOpen }: any) => (
-            <SpeedDial
-              ariaLabel="create-card"
-              onClick={() => setOpen(true)}
-              className={`${classes.speedDial} ${classes.speedDialAdd}`}
-              open={false}
-              icon={<SpeedDialIcon />}
-            />
-          )}
-        >
-          <CreateCard
-            error={error}
-            setData={setData}
-            message={message}
-            user={userID}
+      <SimpleModal
+        onDialogAccept={createCardHandle}
+        setError={setError}
+        activator={({ setOpen }: any) => (
+          <SpeedDial
+            ariaLabel="create-card"
+            onClick={() => setOpen(true)}
+            className={`${classes.speedDial} ${classes.speedDialAdd}`}
+            open={false}
+            icon={<SpeedDialIcon />}
           />
-        </SimpleModal>
-      ) : (
-        <SpeedDial
-          ariaLabel="remove"
-          onClick={removeAction}
-          className={`${classes.speedDial} ${classes.speedDialRemove}`}
-          open={false}
-          data-name="selected"
-          icon={icon}
+        )}
+      >
+        <CreateCard
+          error={error}
+          setData={setData}
+          message={message}
+          user={userID}
         />
-      )}
+      </SimpleModal>
     </div>
   );
 }
@@ -150,16 +87,6 @@ const useStyles = makeStyles((theme) => ({
   speedDialAdd: {
     "&.MuiFab-label": {
       width: "auto"
-    }
-  },
-  speedDialRemove: {
-    "&.MuiSpeedDial-root .MuiFab-primary": {
-      backgroundColor: theme.palette.error.main
-    },
-    "&.MuiSpeedDial-root .MuiSvgIcon-root": {
-      width: "100%",
-      height: "53px",
-      padding: "14px"
     }
   }
 }));

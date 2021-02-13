@@ -1,26 +1,27 @@
 .title-component {
-  position: relative;
-  word-break: break-word;
-  width: fit-content;
+  width: 100%;
+  input,
+  textArea,
   .title {
-    display: block;
+    padding: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     border: 3px solid transparent;
+    min-width: 50px;
     &:hover {
       cursor: pointer;
-      background-color: #e5e5e5;
+      background-color: $backgroundLightGrey;
       border-radius: 5px;
-      color: #212121;
-      padding: 0 5px;
-      margin-left: -5px;
+      color: $textDark;
+      padding: 2px;
     }
     &:focus {
-      background-color: #fff;
-      border: 3px solid #1565c0;
-      color: #333232;
+      background-color: $backgroundLight;
+      border: 3px solid $borderPrimary;
+      color: $textGrey;
       border-radius: 5px;
-      padding: 0 5px;
       outline: none;
-      margin-left: -5px;
+      padding: 2px;
     }
   }
   .icons-wrapper {
@@ -34,7 +35,7 @@
       border-radius: 2px;
       height: 20px;
       width: 20px;
-      color: #676464;
+      color: $backgroundGrey; //idk
     }
   }
 }

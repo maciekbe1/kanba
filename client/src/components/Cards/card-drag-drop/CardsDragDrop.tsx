@@ -14,21 +14,16 @@ import {
   updateItemContent
 } from "store/actions/cardsActions";
 import { isEmpty } from "lodash";
-import { CardsTypes, UserTypes } from "store/types";
+import { CardsTypes } from "store/types";
 
-interface Props {
-  onRemove: Function;
-}
 interface MemoProps {
   card: any;
-  onRemove: Function;
   index: number;
 }
 interface ReduxState {
   cardsReducer: CardsTypes;
-  authReducer: UserTypes;
 }
-export default function DragDropComponent({ onRemove }: Props) {
+export default function DragDropComponent() {
   const selectedItems = useSelector(
     (state: ReduxState) => state.cardsReducer.selectedItems
   );
@@ -36,7 +31,7 @@ export default function DragDropComponent({ onRemove }: Props) {
   const cards = useSelector(
     (state: ReduxState) => state.cardsReducer.cardsState
   );
-  const userID = useSelector((state: ReduxState) => state.authReducer.data._id);
+
   const { itemContentData } = useSelector((state: any) => state.cardsReducer);
 
   const onDragEnd = (result: any) => {
@@ -51,10 +46,11 @@ export default function DragDropComponent({ onRemove }: Props) {
       const selectedContainItem = selectedItems.some(
         (item) => item._id === result.draggableId
       );
-
       const position = result.destination.index;
 
       if (!selectedContainItem) {
+        console.log(selectedContainItem);
+
         const card = find(cards, ["_id", result.source.droppableId]);
         const item = find(card.list, ["_id", result.draggableId]);
         const newSelectedItems = [item, ...selectedItems];
@@ -165,7 +161,7 @@ export default function DragDropComponent({ onRemove }: Props) {
     } else {
       try {
         const newCards = CardsHelper.cardChange(cards, result);
-        CardsService.updateCardPosition(userID, result);
+        CardsService.updateCardPosition(result);
         dispatch(
           setCards({
             cards: newCards
@@ -189,7 +185,7 @@ export default function DragDropComponent({ onRemove }: Props) {
             style={{
               flex: "1 1 auto",
               overflowY: "auto",
-              height: "calc(100vh - 112px)"
+              height: "calc(100vh - 148px)"
             }}
           >
             {cards.map((card, index) => (
@@ -197,7 +193,6 @@ export default function DragDropComponent({ onRemove }: Props) {
                 card={JSON.stringify(card)}
                 key={card._id}
                 index={index}
-                onRemove={onRemove}
               />
             ))}
             {provided.placeholder}
@@ -208,10 +203,6 @@ export default function DragDropComponent({ onRemove }: Props) {
   );
 }
 
-const InnerCard = memo(function InnerCard({
-  card,
-  onRemove,
-  index
-}: MemoProps) {
-  return <Card card={JSON.parse(card)} index={index} onRemove={onRemove} />;
+const InnerCard = memo(function InnerCard({ card, index }: MemoProps) {
+  return <Card card={JSON.parse(card)} index={index} />;
 });
