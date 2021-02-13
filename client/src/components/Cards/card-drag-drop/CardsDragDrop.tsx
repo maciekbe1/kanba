@@ -44,7 +44,7 @@ export default function DragDropComponent() {
       return cards;
     } else if (selectedItems.length >= 1) {
       const selectedContainItem = selectedItems.some(
-        item => item._id === result.draggableId
+        (item) => item._id === result.draggableId
       );
       const position = result.destination.index;
 
@@ -59,7 +59,7 @@ export default function DragDropComponent() {
 
         CardsService.updateManyItems(
           result.destination.droppableId,
-          newSelectedItems.map(item => {
+          newSelectedItems.map((item) => {
             return {
               itemID: item._id,
               cardID: isNil(item.cardID)
@@ -78,7 +78,7 @@ export default function DragDropComponent() {
       } else {
         CardsService.updateManyItems(
           result.destination.droppableId,
-          selectedItems.map(item => {
+          selectedItems.map((item) => {
             return {
               itemID: item._id,
               cardID: isNil(item.cardID)
@@ -178,7 +178,7 @@ export default function DragDropComponent() {
   ) : (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="all-cards" type="CARD">
-        {provided => (
+        {(provided) => (
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}

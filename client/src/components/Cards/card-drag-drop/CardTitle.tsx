@@ -48,6 +48,10 @@ export default function CardTitle({ title, cardID }: any) {
         onKeyPress={onKeyPress}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
+        multiline
+        inputProps={{
+          maxLength: 128
+        }}
       />
     </div>
   );

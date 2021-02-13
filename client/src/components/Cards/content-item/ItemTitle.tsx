@@ -39,12 +39,13 @@ export default function CardTitle({ title, itemID }: Props) {
         preventDuplicate: true
       });
       ref.current.focus();
-    } else {
+    } else if (value !== title) {
       onTitleChange(value, "title");
     }
   };
   const onKeyPress = (e: any) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       ref.current.blur();
     }
   };
@@ -79,6 +80,7 @@ export default function CardTitle({ title, itemID }: Props) {
         inputProps={{
           maxLength: 128
         }}
+        multiline
       />
     </div>
   );

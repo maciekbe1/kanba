@@ -22,25 +22,25 @@ var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
 app.use((req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", true);
-	res.setHeader(
-		"Access-Control-Allow-Methods",
-		"OPTIONS, GET, POST, PUT, PATCH, DELETE"
-	);
-	res.setHeader(
-		"Access-Control-Allow-Headers",
-		"Content-Type, Authorization",
-		"Origin, X-Requested-With, Content-Type, Accept"
-	);
-	next();
+  res.setHeader("Access-Control-Allow-Origin", true);
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
 });
 
 app.use(
-	cookieParser(),
-	jsonParser,
-	urlencodedParser,
-	morgan("tiny")
-	// cors("*")
+  cookieParser(),
+  jsonParser,
+  urlencodedParser,
+  morgan("tiny")
+  // cors("*")
 );
 
 app.use("/api/projects", projectRouter);
@@ -52,33 +52,33 @@ app.use("/api/cards", cardsRouter);
 app.use(error);
 
 if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "client/build")));
-	app.get("*", (req, res) => {
-		res.sendFile(path.join(__dirname, "client/build", "index.html"));
-	});
+  app.use(express.static(path.join(__dirname, "client/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  });
 }
 const connectDb = async () => {
-	return await mongoose.connect(
-		process.env.MONGO_URI,
-		{
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useCreateIndex: true,
-			useFindAndModify: false,
-		},
-		() => {
-			console.log("DB connected");
-		}
-	);
+  return await mongoose.connect(
+    process.env.MONGO_URI,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    },
+    () => {
+      console.log("DB connected");
+    }
+  );
 };
 connectDb()
-	.then(async () => {
-		const server = app.listen(process.env.PORT || 4000);
-		const io = require("socket.io")(server);
-		io.on("connection", (socket) => {
-			console.log("client connected");
-		});
-	})
-	.catch((err) => {
-		console.log(err);
-	});
+  .then(async () => {
+    const server = app.listen(process.env.PORT || 4000);
+    const io = require("socket.io")(server);
+    io.on("connection", (socket) => {
+      console.log("client connected");
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });

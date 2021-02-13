@@ -39,6 +39,7 @@ export default function CardTitle() {
   };
   const onKeyDown = (e: any) => {
     if (e.keyCode === 27) {
+      e.preventDefault();
       ref.current.blur();
     }
   };
@@ -68,6 +69,7 @@ export default function CardTitle() {
         inputProps={{
           maxLength: 128
         }}
+        multiline
       />
     </div>
   );

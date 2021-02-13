@@ -8,12 +8,12 @@
     overflow-y: auto;
     height: calc(100vh - 148px);
 
-    .title-component.--error input {
+    .title-component.--error textarea {
       border: 3px solid $error;
       border-radius: 5px;
       background: $backgroundLight;
     }
-    .title-component input {
+    .title-component textarea {
       margin-left: -5px;
       font-weight: bold;
     }

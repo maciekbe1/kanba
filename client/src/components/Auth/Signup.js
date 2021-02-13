@@ -19,7 +19,7 @@ import Mail from "@material-ui/icons/Mail";
 import Grid from "@material-ui/core/Grid";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import Typography from "@material-ui/core/Typography";
-import GoogleAuth from "components/Auth/GoogleAuth";
+// import GoogleAuth from "components/Auth/GoogleAuth";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -162,12 +162,12 @@ export default function Signup() {
                 Register
               </Button>
             </form>
-            <Box my={2}>
+            {/* <Box my={2}>
               <Typography align="center">Or</Typography>
             </Box>
             <Box display="flex" justifyContent="center">
               <GoogleAuth />
-            </Box>
+            </Box> */}
           </Grid>
         </Grid>
       ) : (
